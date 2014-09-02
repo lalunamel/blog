@@ -17,5 +17,4 @@ after_success:
 - git push -f https://github.com/lalunamel/blog.git gh-pages
 env:
   global:
-  - secure: hUqYb5otOUE46f0k0XtMPkB60QJUOzAguK9N/Vf93yhxx8bbAf6NFdFpCOyY0GE1HQSR3jxFIYXzf+dMNzIEFPI+9kinS/WQ5MY3DTV+3VPGYCzkdtdGS8CYcAess4FlPCfSBNaabEJ5V+anyyK3WTLrsHFGUzFiekt0MSIGCk0=
-  - secure: EVTTpwfWM4WrU7KNQIq8SSFQtJVm7keSFyicI93utHCBLZCGURsa2f0DnotqvO3qb4krTi3cVxn9c6YHlUUEOxKyUT9Q16CHpfRS02q2oIhG1XaWvFmcyg34NtjaxmyPTioWQJT/NIWHzKN4QvUMayW/Mjymi4lKhZ162Jd+eLg=
+    secure: N6GPqP7YdPSoeWNSNq5Z7pqiYdH6kF8FMbhNIzpLikwBQJU26wxKNRSlg4twR+BYZmGQssjyC0aoo/vCQ3vbc28heXOad1eCFabyAGNS7TxFeYSEuMKsyU4RHs0q1ta19FuL0znodTigZKM66yaRbq3P94ajfKfGoutjJgxJ9vE=
