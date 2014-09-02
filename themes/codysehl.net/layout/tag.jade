@@ -1,0 +1,10 @@
+extends default-layout
+
+block content
+  .blog.category-archive-page
+    include _partials/sidebar
+    .sidebar-wrap
+      section.intro
+        h2.header= page.tag
+        p.description is the name of something I think is important
+      include _partials/post-listing

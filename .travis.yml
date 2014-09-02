@@ -1,0 +1,20 @@
+language: node
+node_js:
+  - 0.10
+branches:
+  only:
+  - master
+install:
+- git config --global user.email "cody.sehl+travis@gmail.com"
+- git config --global user.name "Travis"
+- npm install
+script:
+- ./travis/build.sh
+- ./travis/commit.sh
+after_success:
+- git config credential.helper "store --file=.git/credentials"
+- echo "https://${GH_TOKEN}:@github.com" > .git/credentials
+- git push -f https://github.com/lalunamel/blog.git gh-pages
+env:
+  global:
+    secure: "hUqYb5otOUE46f0k0XtMPkB60QJUOzAguK9N/Vf93yhxx8bbAf6NFdFpCOyY0GE1HQSR3jxFIYXzf+dMNzIEFPI+9kinS/WQ5MY3DTV+3VPGYCzkdtdGS8CYcAess4FlPCfSBNaabEJ5V+anyyK3WTLrsHFGUzFiekt0MSIGCk0="

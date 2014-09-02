@@ -1,0 +1,11 @@
+extends default-layout
+
+block content
+  .blog.single-post-page
+    include _partials/sidebar
+    .sidebar-wrap
+      .single-post
+        h2.header #{page.title}
+        h3.date #{page.date}
+        .content!= page.content
+        include _partials/disqus.html

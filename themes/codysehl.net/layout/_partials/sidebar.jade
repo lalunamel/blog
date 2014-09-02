@@ -1,0 +1,7 @@
+.sidebar
+  ul
+    li
+      a(href="#{config.url}") Recent Posts
+      for tag in site.tags.toArray()
+        li
+          a(href="#{tag.permalink}") #{tag.name}
