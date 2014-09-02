@@ -10,8 +10,8 @@ install:
 - npm install
 script:
 - ./travis/build.sh
-- ./travis/commit.sh
 after_success:
+- ./travis/commit.sh
 - git config credential.helper "store --file=.git/credentials"
 - echo "https://${GH_TOKEN}:@github.com" > .git/credentials
 - git push -f https://github.com/lalunamel/blog.git gh-pages
