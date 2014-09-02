@@ -2,7 +2,7 @@
 layout: post
 title:  "Hermann Hesse: Demian"
 date:   2013-12-23 18:58:50
-tags: [Profound Material, Books]
+tags: [Profound Materials, Books]
 excerpt: "Hermann Hesse is one of my favorite writers. Most of his work was written in the first half of the 20th century and deals with the relationship between opposites: the secular and the religious, light and dark, knowledge and ignorance."
 ---
 [Hermann Hesse](http://en.wikipedia.org/wiki/Hermann_Hesse) is [*another*](/blog/2013/David-Foster-Wallace:-E-Unibus-Pluram/) one of my favorite writers.

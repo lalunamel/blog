@@ -2,7 +2,7 @@
 layout: post
 title:  "A Lecture on Depression"
 date:   2013-12-23 21:18:50
-tags: [Profound Material, Videos]
+tags: [Profound Materials, Videos]
 excerpt: "Robert Sapolsky gave a lecture at Stanford on the topic of major depression. For those that have no information on the disease, this video lecture is worth the time."
 ---
 Until recently, I had no scientific information regarding depression. Only personal opinion and media influence had shaped my views on the subject.

@@ -2,7 +2,7 @@
 layout: post
 title:  "David Foster Wallace: E Unibus Pluram"
 date:   2013-12-23 13:29:50
-tags: [Profound Material, Books]
+tags: [Profound Materials, Books]
 excerpt: "David Foster Wallace wrote a great piece on fiction writing that encompassed the topic of irony and self-reference within media. It's a work that helped me organize my feelings about the current state of American youth culture."
 ---
 [David Foster Wallace](http://en.wikipedia.org/wiki/David_Foster_Wallace) is one of my favorite modern writers. 
