@@ -6,6 +6,6 @@ block content
     .sidebar-wrap
       .single-post
         h2.header #{page.title}
-        h3.date #{page.date}
+        h3.date #{page.date.format('MMMM Do, YYYY')}
         .content!= page.content
         include _partials/disqus.html
