@@ -4,11 +4,18 @@
   "private": true,
   "dependencies": {
     "hexo": "^2.8.2",
+    "hexo-admin-plugin": "^0.1.2",
+    "hexo-front-matter-excerpt": "^0.0.2",
     "hexo-renderer-ejs": "*",
     "hexo-renderer-jade": "^0.1.0",
     "hexo-renderer-marked": "*",
     "hexo-renderer-stylus": "*",
-    "yaml-front-matter": "^3.0.1",
-    "hexo-front-matter-excerpt": "^0.0.2"
+    "yaml-front-matter": "^3.0.1"
+  },
+  "scripts": {
+    "start": "hexo s -w"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.7"
   }
 }

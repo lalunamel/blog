@@ -1,0 +1,10 @@
+{
+	"name": "codysehl.net-blog",
+	"version": "0.0.1",
+	"main": "public/index.html",
+	"dependencies": {
+		"octicons": "*",
+		"codysehl.net-scaffold": "git@github.com:lalunamel/codysehl.net-scaffold.git"
+	},
+	"overrides": {}
+}
