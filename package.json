@@ -9,6 +9,7 @@
     "hexo-renderer-ejs": "*",
     "hexo-renderer-jade": "^0.1.0",
     "hexo-renderer-marked": "*",
+    "hexo-renderer-pandoc": "0.0.8",
     "hexo-renderer-stylus": "*",
     "yaml-front-matter": "^3.0.1"
   },
