@@ -1,7 +1,9 @@
+---
+layout: post
 title: "Pragmatism and Democracy"
 date: 2014-11-18 18:09:02
 tags: [Philosophy]
-excerpt: "Hello world"
+excerpt: "I recently finished a fantasitc class called 'American Philosophy and Postmodernism' and I'd like to take a moment to express a few of the important things it impressed on me."
 ---
 This week I finished my first term of Senior year, and a course called “American Philosophy and Postmodernism” with professor (and Knox grad), Brandon Polite[^1]. In it we discussed a philosophy called Pragmatism, it’s creators Charles Peirce, William James, and John Dewey, as well as the more modern practitioners of the philosophy like Hilary Putnam and Cheryl Misak.
 
