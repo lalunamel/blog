@@ -9,3 +9,11 @@ This blog uses Hexo
 It also uses pandoc
 
 	sudo apt-get install pandoc
+
+### To start the server
+
+	`hexo server`
+
+### To write a new post
+
+	`hexo new "POSTNAME"`
