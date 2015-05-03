@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "OpenType font features"
+title: "OpenType Font Features"
 date: 2015-02-21 18:09:02
 tags: [Typography]
 excerpt: ""
