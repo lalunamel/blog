@@ -3,4 +3,4 @@
 # Builds junk
 
 echo '### Building hexo site ###'
-hexo generate --config _config-prod.yml --debug
+./node_modules/hexo/bin/hexo generate --config _config-prod.yml --debug
