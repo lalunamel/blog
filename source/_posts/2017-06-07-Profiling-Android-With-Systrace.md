@@ -1,7 +1,9 @@
+---
+layout: post
 title: Using Systrace and Profile GPU Rendering to Reduce Jank in the Tracker Android App
 date: 2017-03-02 06:24:59
 tags: [Software, Android]
-excerpt: "When the Tracker Team noticed jank while using the [new and updated](https://www.pivotaltracker.com/blog/android-1.0/) Android application we went straight away looking for something like Chrome's [Timeline tool](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool). For Android, that tool is [systrace](https://developer.android.com/studio/profile/systrace-commandline.html). We also used Android's native 'Profile GPU Rendering' feature to get a more in-depth picture of the bottlenecks in our app's rendering pipeline."
+excerpt: "An in-depth picture of the rendering bottlenecks in Tracker Android using Systrace and Profile GPU Rendering"
 ---
 This post was originally prepared at and for the Pivotal Tracker Team in Denver, CO. [It appears on the Pivotal Tracker blog](https://pivotaltracker.com/blog/using-systrace-profile-GPU-rendering-Tracker-Android/).
 
