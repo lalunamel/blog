@@ -20,7 +20,7 @@ You can use this as reference as you continue the guide.
 
 Optional elements of a function definition are in curly braces `{}`.
 
-    {FUNCTION_TYPE} fun {<GENERIC_TYPES>} {OBJECT.}FUNC_NAME(
+    {FUNCTION_TYPE} fun {<GENERIC_TYPES>} {OBJECT.}FUNCTION_NAME(
       PARAMETER_NAME: PARAMETER_TYPE,
       ...MORE PARAMETERS...
     ): RETURN_TYPE
@@ -42,7 +42,7 @@ A non-exhaustive list of function types:
 
 `OBJECT` is the object the function is defined on.
 
-`FUNC_NAME` is self-explanatory.
+`FUNCTION_NAME` is self-explanatory.
 
 `PARAMETER_NAME` also the above.
 
