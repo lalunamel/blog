@@ -1,3 +1,0 @@
-title: Winter Printmaking
-tags:
----
