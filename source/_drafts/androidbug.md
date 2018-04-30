@@ -1,7 +1,7 @@
 ## Constraint Layout Spelunking
 
 ## Problem Statement
-
+ 
 I've got a button that has enough text in it so that it fills the width of the screen.
 When I create constraints with margins on both the left and the right sides of my button, I expect some sort of reasonable behavior.
 In this case, I know that adding margins to the left and right of my button should either:
