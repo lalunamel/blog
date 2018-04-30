@@ -1,6 +1,6 @@
 language: node
 node_js:
-- "node"
+- "8.9.4"
 branches:
   only:
   - master
