@@ -3,7 +3,7 @@
 # Builds junk
 
 echo '### Building hexo site ###'
-echo "#### node_modules/hexo/bin"
+echo "#### node_modules/hexo/bin "
 ls node_modules/hexo/bin
 echo "#### node_modules/.bin"
 ls node_modules/.bin
