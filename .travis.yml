@@ -9,13 +9,13 @@ install:
 - git config --global user.name "Travis"
 - npm install
 script:
-- npm --version
-- node --version
 - npm run-script build
 before_install:
 - sudo apt-get update -qq
 - sudo apt-get install -y pandoc
 - npm i -g npm@6.0.0
+- npm --version
+- node --version
 after_success:
 - ./travis/commit.sh
 - git config credential.helper "store --file=.git/credentials"
