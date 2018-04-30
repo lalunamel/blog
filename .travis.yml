@@ -9,7 +9,7 @@ install:
 - git config --global user.name "Travis"
 - npm install
 script:
-- npm build
+- npm run-script build
 before_install:
 - sudo apt-get update -qq
 - sudo apt-get install -y pandoc
