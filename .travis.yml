@@ -13,9 +13,6 @@ script:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y pandoc
-  - npm i -g npm@6.0.0
-  - node --version
-  - npm --version
 after_success:
   - ./travis/commit.sh
   - git config credential.helper "store --file=.git/credentials"
