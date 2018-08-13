@@ -3,7 +3,7 @@ layout: post
 title: Are Kotlin List Operators Efficient?
 date: 2018-08-18 06:24:59
 tags: [Software, Kotlin]
-excerpt: ""
+excerpt: "Take a look at how Kotlin's map, filter, and reduce are implemented and what that means for their efficiency."
 ---
 
 Well, that depends on what you mean by _efficient_!
