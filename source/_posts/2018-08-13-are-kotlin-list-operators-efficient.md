@@ -12,7 +12,7 @@ Let's start by exploring some ways list operators (map, filter, reduce and their
 
 An example:
 
-```
+```lang-kotlin
   val numbers = listOf(1, 2, 3, 4, 5, 6)
   val evenNumbers = list.filter { num -> num % 2 == 0 } // 2, 4, 6
   val evenNumbersDoubled = evenNumbers.map { num -> num * 2 } // 4, 8, 12
@@ -24,7 +24,7 @@ Each step is broken out into a variable so that every operation has a name.
 
 Here's a more concise version, closer to how this would probably be written in production:
 
-```
+```lang-kotlin
   listOf(1, 2, 3, 4, 5, 6)
     .filter { num -> num % 2 == 0 } // 2, 4, 6
     .map { num -> num * 2 } // 4, 8, 12
@@ -36,7 +36,7 @@ Given the above, I can conceive of two reasonable ways this code looks under the
 
 ### A loop for every operator
 
-```
+```lang-kotlin
   list = [1, 2, 3, 4, 5, 6]
 
   // Filter
@@ -68,7 +68,7 @@ With this method, the list is iterated over three times.
 
 ### Many operators, one loop
 
-```
+```lang-kotlin
   list = [1, 2, 3, 4, 5, 6]
 
   sum = 0
@@ -104,7 +104,7 @@ The [source](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/map
 
 Here's the implementation for `mapTo`:
 
-```
+```lang-kotlin
 public inline fun <T, R, C : MutableCollection<in R>> Array<out T>.mapTo(destination: C, transform: (T) -> R): C {
     for (item in this)
         destination.add(transform(item))
@@ -118,7 +118,7 @@ The [source](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/fil
 
 Here's the implementation for `filterTo`:
 
-```
+```lang-kotlin
 public inline fun <T, C : MutableCollection<in T>> Array<out T>.filterTo(destination: C, predicate: (T) -> Boolean): C {
     for (element in this) if (predicate(element)) destination.add(element)
     return destination
@@ -133,7 +133,7 @@ _Note: Reduce does the same thing as Fold, except the initial value of the accum
 
 Here's the implementation for `reduce`:
 
-```
+```lang-kotlin
 public inline fun <S, T : S> Array<out T>.reduce(operation: (acc: S, T) -> S): S {
     if (isEmpty())
         throw UnsupportedOperationException("Empty array can't be reduced.")
