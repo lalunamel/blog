@@ -32,7 +32,7 @@ listOf(1, 2, 3, 4, 5, 6)
 ```
 
 Given the above, I can conceive of two reasonable ways this code looks under the hood:
-(in psudo-Java for simplicity)
+(in pseudo-Java for simplicity)
 
 ### A loop for every operator
 
@@ -156,7 +156,7 @@ Then clearly, no! Kotlin list operators are not efficient.
 
 ## Why not?
 
-Language implementors tend to be pretty sharp folks and it's unlikely they've never thought of the scenario I described above.
+Language implementers tend to be pretty sharp folks and it's unlikely they've never thought of the scenario I described above.
 
 Let's partake in some [apologetics](https://www.google.com/search?q=apologetics&oq=apologetics&aqs=chrome..69i57j0l5.1969j0j7&sourceid=chrome&ie=UTF-8) and think about why Kotlin's list operators were implemented this way - there's probably a reason!
 
@@ -172,6 +172,6 @@ What if your map and filter function write to, then read from a variable defined
 
 Perhaps another reason Kotlin's list operators aren't that efficient is because they were never meant to be. As with all things performance related, it's not a problem until it's a problem. Which is to say, until you're in a situation where efficiency matters, who cares how many times you're running a for loop?
 
-_Maybe_ Kotlin has a less efficient list type for small amounts of data, and a different list type for very large amounts of data? _Maybe_ the language implementors made a conscious decision to separate efficient operations into their own special concept?
+_Maybe_ Kotlin has a less efficient list type for small amounts of data, and a different list type for very large amounts of data? _Maybe_ the language implementers made a conscious decision to separate efficient operations into their own special concept?
 
 Next time, we'll take a look at the internals of [Sequence](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.sequences/-sequence/index.html) - a list type that does just that!
