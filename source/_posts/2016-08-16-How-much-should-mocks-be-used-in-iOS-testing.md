@@ -19,10 +19,12 @@ A view expressed by a more experienced iOS developer [^1] was roughly that mocks
 
 My philosophy is that mocks should be used as much as possible. The thought is that the unit under test should be ignorant of the side effects of its calling of a method on another object. That is to say that the method
 
-	Bowl bowl;
-	Dog.haveDinner {
-		bowl.eat()
-	}
+```lang-java
+Bowl bowl;
+Dog.haveDinner {
+	bowl.eat()
+}
+```
 
 should be ignorant of the effects of calling `bowl.eat`, and the test shouldn't have to deal with the internals of `Bowl`, and only assert that `Bowl.eat` was called.
 

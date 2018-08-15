@@ -52,23 +52,27 @@ A non-exhaustive list of function types:
 
 ### [List.map](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/map.html)
 
-    inline fun <T, R> Array<out T>.map(
-        transform: (T) -> R
-    ): List<R>
+```lang-kotlin
+inline fun <T, R> Array<out T>.map(
+  transform: (T) -> R
+): List<R>
+```
 
 Here's what we get from this definition, part by part:
 
 - it's an inline function, so it doesn't close over any variables
-- it uses two types, `T` and `R`, that will be **T**ransformed and **R**eturned
+- it uses two types, `T` and `R`, that will be `T`ransformed and `R`eturned
 - it returns an array with elements of type `T`[^3]
 - it takes a function. That function takes a variable of type `T` and returns a variable of type `R`. This is the function that does the mapping from one element to another
 - it returns a list with elements of type `R`
 
 ### [List.reduce](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/reduce.html)
 
-    inline fun <S, T : S> Array<out T>.reduce(
-      operation: (acc: S, T) -> S
-    ): S
+```lang-kotlin
+inline fun <S, T : S> Array<out T>.reduce(
+  operation: (acc: S, T) -> S
+): S
+```
 
 - it's an inline function. No closure for you!
 - it uses two types, `S` and `T`, that represent the type of the accumulated value and the type of the elements the function is accumulating. `T` inherits from `S`.
@@ -76,13 +80,13 @@ Here's what we get from this definition, part by part:
 - it returns a value of type `S`
 
 ### [List.binarySearch](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/binary-search.html)
-   
-    fun <T : Comparable<T>> List<T?>.binarySearch(
-        element: T?,
-        fromIndex: Int = 0,
-        toIndex: Int = size
-    ): Int
-
+```lang-kotlin
+fun <T : Comparable<T>> List<T?>.binarySearch(
+  element: T?,
+  fromIndex: Int = 0,
+  toIndex: Int = size
+): Int
+```
 - it uses a type `T` that inherits from `Comparable`
 - it's defined on a `List` of elements of type T that might be null (`?`)
 - it takes three parameters, the last two defaulting to `0` and `List.size` if not given

@@ -71,99 +71,100 @@ I've reproduced my annotated version of `analyzer.rb` below without any of the c
 The original comments only speak in terms of the domain that I'm seeking to understand and aren't very helpful for someone new to the code like me.
 
 
+```lang-ruby
+# # # # # # # # # # # # # # # #
+# vvv The Relevant Bits vvv # #
+# # # # # # # # # # # # # # # #
 
-    # # # # # # # # # # # # # # # #
-    # vvv The Relevant Bits vvv # #
-    # # # # # # # # # # # # # # # #
+def analyze_host_targets_in_podfile(aggregate_targets, embedded_aggregate_targets)
+  # aggregate_targets targets are all targets defined in the podfile
+  # embedded_aggregate_targets targets are a subset of the above that are "embedded"
 
-    def analyze_host_targets_in_podfile(aggregate_targets, embedded_aggregate_targets)
-      # aggregate_targets targets are all targets defined in the podfile
-      # embedded_aggregate_targets targets are a subset of the above that are "embedded"
+    # "embeded" targets are those targets defined in EMBED_FRAMEWORKS_IN_HOST_TARGET_TYPES of `aggregate_target.rb`
+    # [:app_extension, :framework, :static_library, :messages_extension, :watch_extension, :xpc_service]
 
-        # "embeded" targets are those targets defined in EMBED_FRAMEWORKS_IN_HOST_TARGET_TYPES of `aggregate_target.rb`
-        # [:app_extension, :framework, :static_library, :messages_extension, :watch_extension, :xpc_service]
+  target_definitions_by_uuid = {}
+  aggregate_targets.each do |target|
+     # a user_target == target, in the xcode sense
+    target.user_targets.map(&:uuid).each do |uuid|
+      target_definitions_by_uuid[uuid] = target.target_definition
+    end
+  end
 
-      target_definitions_by_uuid = {}
-      aggregate_targets.each do |target|
-         # a user_target == target, in the xcode sense
-        target.user_targets.map(&:uuid).each do |uuid|
-          target_definitions_by_uuid[uuid] = target.target_definition
-        end
-      end
+  # user_project == project in the xcode sense
+  aggregate_target_user_projects = aggregate_targets.map(&:user_project)
+  embedded_targets_missing_hosts = []
+  host_uuid_to_embedded_target_definitions = {}
 
-      # user_project == project in the xcode sense
-      aggregate_target_user_projects = aggregate_targets.map(&:user_project)
-      embedded_targets_missing_hosts = []
-      host_uuid_to_embedded_target_definitions = {}
+  embedded_aggregate_targets.each do |target|
+    host_uuids = []
+    # if all the targets are part of the same project, then
+    # `aggregate_target_user_projects.product(target.user_targets)` is a list, length = count(targets), of [project, target] repeated
+    aggregate_target_user_projects.product(target.user_targets).each do |user_project, user_target|
+      # user_project == project for target
+      # user_target == target
 
-      embedded_aggregate_targets.each do |target|
-        host_uuids = []
-        # if all the targets are part of the same project, then
-        # `aggregate_target_user_projects.product(target.user_targets)` is a list, length = count(targets), of [project, target] repeated
-        aggregate_target_user_projects.product(target.user_targets).each do |user_project, user_target|
-          # user_project == project for target
-          # user_target == target
+      host_uuids += user_project.host_targets_for_embedded_target(user_target).map(&:uuid)
+    end
 
-          host_uuids += user_project.host_targets_for_embedded_target(user_target).map(&:uuid)
-        end
+    # host_uuids == list of targets that depend on the target that is the subject of this each block
 
-        # host_uuids == list of targets that depend on the target that is the subject of this each block
-
-        # how does user_project.host_targets_for_embedded_target(embedded_target) work???
-        # that method is part of the CocoaPods/Xcodeproj ruby library
-        # it iterates over all targets in a project
-        # and returns a list of those targets that depend on embedded_target
+    # how does user_project.host_targets_for_embedded_target(embedded_target) work???
+    # that method is part of the CocoaPods/Xcodeproj ruby library
+    # it iterates over all targets in a project
+    # and returns a list of those targets that depend on embedded_target
 
 
-        host_uuids.each do |uuid|
-          (host_uuid_to_embedded_target_definitions[uuid] ||= []) << target.target_definition if target_definitions_by_uuid.key? uuid
-        end
+    host_uuids.each do |uuid|
+      (host_uuid_to_embedded_target_definitions[uuid] ||= []) << target.target_definition if target_definitions_by_uuid.key? uuid
+    end
 
-        embedded_targets_missing_hosts << target unless host_uuids.any? do |uuid|
-          target_definitions_by_uuid.key? uuid
-        end
-      end
+    embedded_targets_missing_hosts << target unless host_uuids.any? do |uuid|
+      target_definitions_by_uuid.key? uuid
+    end
+  end
 
-    # # # # # # # # # # # # # # # #
-    # ^^^ The Relevant Bits ^^^ # #
-    # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # #
+# ^^^ The Relevant Bits ^^^ # #
+# # # # # # # # # # # # # # # #
 
-      unless embedded_targets_missing_hosts.empty?
-        embedded_targets_missing_hosts_product_types = embedded_targets_missing_hosts.map(&:user_targets).flatten.map(&:symbol_type).uniq
+  unless embedded_targets_missing_hosts.empty?
+    embedded_targets_missing_hosts_product_types = embedded_targets_missing_hosts.map(&:user_targets).flatten.map(&:symbol_type).uniq
 
-        if embedded_targets_missing_hosts_product_types == [:framework]
-          UI.warn 'The Podfile contains framework targets, for which the Podfile does not contain host targets (targets which embed the framework).' \
-            "\n" \
-            'If this project is for doing framework development, you can ignore this message. Otherwise, add a target to the Podfile that embeds these frameworks to make this message go away (e.g. a test target).'
-        else
-          target_names = embedded_targets_missing_hosts.map do |target|
-            target.name.sub('Pods-', '') # Make the target names more recognizable to the user
-          end.join ', '
-          raise Informative, "Unable to find host target(s) for #{target_names}. Please add the host targets for the embedded targets to the Podfile." \
-                              "\n" \
-                              'Certain kinds of targets require a host target. A host target is a "parent" target which embeds a "child" target. These are example types of targets that need a host target:' \
-                              "\n- Framework" \
-                              "\n- App Extension" \
-                              "\n- Watch OS 1 Extension" \
-                              "\n- Messages Extension (except when used with a Messages Application)"
-        end
-      end
+    if embedded_targets_missing_hosts_product_types == [:framework]
+      UI.warn 'The Podfile contains framework targets, for which the Podfile does not contain host targets (targets which embed the framework).' \
+        "\n" \
+        'If this project is for doing framework development, you can ignore this message. Otherwise, add a target to the Podfile that embeds these frameworks to make this message go away (e.g. a test target).'
+    else
+      target_names = embedded_targets_missing_hosts.map do |target|
+        target.name.sub('Pods-', '') # Make the target names more recognizable to the user
+      end.join ', '
+      raise Informative, "Unable to find host target(s) for #{target_names}. Please add the host targets for the embedded targets to the Podfile." \
+                          "\n" \
+                          'Certain kinds of targets require a host target. A host target is a "parent" target which embeds a "child" target. These are example types of targets that need a host target:' \
+                          "\n- Framework" \
+                          "\n- App Extension" \
+                          "\n- Watch OS 1 Extension" \
+                          "\n- Messages Extension (except when used with a Messages Application)"
+    end
+  end
 
-      target_mismatches = []
-      host_uuid_to_embedded_target_definitions.each do |uuid, target_definitions|
-        host_target_definition = target_definitions_by_uuid[uuid]
-        target_definitions.each do |target_definition|
-          unless host_target_definition.uses_frameworks? == target_definition.uses_frameworks?
-            target_mismatches << "- #{host_target_definition.name} (#{host_target_definition.uses_frameworks?}) and #{target_definition.name} (#{target_definition.uses_frameworks?}) do not both set use_frameworks!."
-          end
-        end
-      end
-
-      unless target_mismatches.empty?
-        heading = 'Unable to integrate the following embedded targets with their respective host targets (a host target is a "parent" target which embeds a "child" target like a framework or extension):'
-        raise Informative, heading + "\n\n" + target_mismatches.sort.uniq.join("\n")
+  target_mismatches = []
+  host_uuid_to_embedded_target_definitions.each do |uuid, target_definitions|
+    host_target_definition = target_definitions_by_uuid[uuid]
+    target_definitions.each do |target_definition|
+      unless host_target_definition.uses_frameworks? == target_definition.uses_frameworks?
+        target_mismatches << "- #{host_target_definition.name} (#{host_target_definition.uses_frameworks?}) and #{target_definition.name} (#{target_definition.uses_frameworks?}) do not both set use_frameworks!."
       end
     end
+  end
+
+  unless target_mismatches.empty?
+    heading = 'Unable to integrate the following embedded targets with their respective host targets (a host target is a "parent" target which embeds a "child" target like a framework or extension):'
+    raise Informative, heading + "\n\n" + target_mismatches.sort.uniq.join("\n")
+  end
+end
+```
 
 
 After working through the source, we've found a few answers:

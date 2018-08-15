@@ -13,10 +13,10 @@ Let's start by exploring some ways list operators (map, filter, reduce and their
 An example:
 
 ```lang-kotlin
-  val numbers = listOf(1, 2, 3, 4, 5, 6)
-  val evenNumbers = list.filter { num -> num % 2 == 0 } // 2, 4, 6
-  val evenNumbersDoubled = evenNumbers.map { num -> num * 2 } // 4, 8, 12
-  val sum = evenNumbersDoubled.reduce { sum, num -> sum + num } // 24
+val numbers = listOf(1, 2, 3, 4, 5, 6)
+val evenNumbers = list.filter { num -> num % 2 == 0 } // 2, 4, 6
+val evenNumbersDoubled = evenNumbers.map { num -> num * 2 } // 4, 8, 12
+val sum = evenNumbersDoubled.reduce { sum, num -> sum + num } // 24
 ```
 
 In this example, we're given a list of numbers, find the even ones, double those, then sum the whole thing.
@@ -25,10 +25,10 @@ Each step is broken out into a variable so that every operation has a name.
 Here's a more concise version, closer to how this would probably be written in production:
 
 ```lang-kotlin
-  listOf(1, 2, 3, 4, 5, 6)
-    .filter { num -> num % 2 == 0 } // 2, 4, 6
-    .map { num -> num * 2 } // 4, 8, 12
-    .reduce { sum, num -> sum + num } // 24
+listOf(1, 2, 3, 4, 5, 6)
+  .filter { num -> num % 2 == 0 } // 2, 4, 6
+  .map { num -> num * 2 } // 4, 8, 12
+  .reduce { sum, num -> sum + num } // 24
 ```
 
 Given the above, I can conceive of two reasonable ways this code looks under the hood:
@@ -37,31 +37,31 @@ Given the above, I can conceive of two reasonable ways this code looks under the
 ### A loop for every operator
 
 ```lang-kotlin
-  list = [1, 2, 3, 4, 5, 6]
+list = [1, 2, 3, 4, 5, 6]
 
-  // Filter
-  evenNumbers = []
-  for(i=0; i<list.length, i++) {
-    num = list[i]
-    if(num % 2 == 0) {
-      evenNumbers.add(num)
-    }
+// Filter
+evenNumbers = []
+for(i=0; i<list.length, i++) {
+  num = list[i]
+  if(num % 2 == 0) {
+    evenNumbers.add(num)
   }
+}
 
-  // Map
-  evenNumbersDoubled = []
-  for(i=0; i<evenNumbers.length, i++) {
-    num = evenNumbers[i]
-    transformedResult = num * 2
-    evenNumbersDoubled.add(transformedResult)
-  }
+// Map
+evenNumbersDoubled = []
+for(i=0; i<evenNumbers.length, i++) {
+  num = evenNumbers[i]
+  transformedResult = num * 2
+  evenNumbersDoubled.add(transformedResult)
+}
 
-  // Reduce
-  sum = 0
-  for(i=0; i<evenNumbersDoubled.length, i++) {
-    num = evenNumbersDoubled[i]
-    sum = sum + num
-  }
+// Reduce
+sum = 0
+for(i=0; i<evenNumbersDoubled.length, i++) {
+  num = evenNumbersDoubled[i]
+  sum = sum + num
+}
 ```
 
 With this method, the list is iterated over three times.
@@ -69,23 +69,23 @@ With this method, the list is iterated over three times.
 ### Many operators, one loop
 
 ```lang-kotlin
-  list = [1, 2, 3, 4, 5, 6]
+list = [1, 2, 3, 4, 5, 6]
 
-  sum = 0
-  evenNumbers = []
-  for(i=0; i<list.length, i++) {
-    num = list[i]
+sum = 0
+evenNumbers = []
+for(i=0; i<list.length, i++) {
+  num = list[i]
 
-    // Filter
-    if(num % 2 == 0) {
+  // Filter
+  if(num % 2 == 0) {
 
-      // Map
-      num = num * 2
+    // Map
+    num = num * 2
 
-      // Reduce
-      sum = sum + num
-    }
+    // Reduce
+    sum = sum + num
   }
+}
 ```
 
 With this method, the list is iterated over one time.
@@ -106,9 +106,9 @@ Here's the implementation for `mapTo`:
 
 ```lang-kotlin
 public inline fun <T, R, C : MutableCollection<in R>> Array<out T>.mapTo(destination: C, transform: (T) -> R): C {
-    for (item in this)
-        destination.add(transform(item))
-    return destination
+  for (item in this)
+    destination.add(transform(item))
+  return destination
 }
 ```
 
@@ -120,8 +120,8 @@ Here's the implementation for `filterTo`:
 
 ```lang-kotlin
 public inline fun <T, C : MutableCollection<in T>> Array<out T>.filterTo(destination: C, predicate: (T) -> Boolean): C {
-    for (element in this) if (predicate(element)) destination.add(element)
-    return destination
+  for (element in this) if (predicate(element)) destination.add(element)
+  return destination
 }
 ```
 
@@ -135,13 +135,13 @@ Here's the implementation for `reduce`:
 
 ```lang-kotlin
 public inline fun <S, T : S> Array<out T>.reduce(operation: (acc: S, T) -> S): S {
-    if (isEmpty())
-        throw UnsupportedOperationException("Empty array can't be reduced.")
-    var accumulator: S = this[0]
-    for (index in 1..lastIndex) {
-        accumulator = operation(accumulator, this[index])
-    }
-    return accumulator
+  if (isEmpty())
+    throw UnsupportedOperationException("Empty array can't be reduced.")
+  var accumulator: S = this[0]
+  for (index in 1..lastIndex) {
+    accumulator = operation(accumulator, this[index])
+  }
+  return accumulator
 }
 ```
 
