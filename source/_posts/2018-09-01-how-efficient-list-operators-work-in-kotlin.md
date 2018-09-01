@@ -1,7 +1,7 @@
 ---
 layout: post
 title: How Efficient List Operators Work in Kotlin
-date: 2018-08-20 06:24:59
+date: 2018-09-01 06:24:59
 tags: [Software, Kotlin]
 excerpt: "Let's think of a way efficient list operators might work in Kotlin, then see how they're actually implemented in the Sequence list type."
 ---
