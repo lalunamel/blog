@@ -10,8 +10,6 @@ In the previous post we took a look at whether or not Kotlin's `List` `map`, `fi
 
 If you haven't read that post, [go ahead](http://blog.codysehl.net/2018/are-kotlin-list-operators-efficient/)!
 
-I'll wait.
-
 So, we understand that they are in fact _not_ efficient, where the definition of efficient means for a given list, the list is iterated over a small number of times. It turns out that using Kotlin's list operators means a list is iterated once per operator! This was the `A loop for every operator method` I described.
 
 I proposed a more efficient method called `Many Operators, One Loop`. That method iterated over the list only once and transformed the list operators into an `if` statement and a series of inline operations.
