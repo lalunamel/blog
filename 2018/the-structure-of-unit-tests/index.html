@@ -1,0 +1,43 @@
+<!DOCTYPE html><html><head><title>The Structure of Unit Tests — Cody Sehl </title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"><script type="text/javascript" src="/js/ga.js"></script><script type="text/javascript" src="//use.typekit.net/fjx5dfz.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script><link rel="stylesheet" href="/css/prism.css"><script type="text/javascript" src="/js/prism.js"></script></head><body><nav><ul><li><a href="http://codysehl.net/">About</a></li><li><a href="http://codysehl.net/work">Work</a></li><li><a href="http://blog.codysehl.net">Blog</a></li></ul></nav></body></html><div class="blog single-post-page"><div class="sidebar"><ul><li><a href="http://blog.codysehl.net">Recent Posts</a><li><a href="http://blog.codysehl.net/tags/Software/">Software</a></li><li><a href="http://blog.codysehl.net/tags/Android/">Android</a></li><li><a href="http://blog.codysehl.net/tags/Profound-Materials/">Profound Materials</a></li><li><a href="http://blog.codysehl.net/tags/Videos/">Videos</a></li><li><a href="http://blog.codysehl.net/tags/Books/">Books</a></li><li><a href="http://blog.codysehl.net/tags/Reviews/">Reviews</a></li><li><a href="http://blog.codysehl.net/tags/Philosophy/">Philosophy</a></li><li><a href="http://blog.codysehl.net/tags/Startup-Term/">Startup Term</a></li><li><a href="http://blog.codysehl.net/tags/iOS/">iOS</a></li><li><a href="http://blog.codysehl.net/tags/Testing/">Testing</a></li><li><a href="http://blog.codysehl.net/tags/Kotlin/">Kotlin</a></li></li></ul></div><div class="sidebar-wrap"><div class="single-post"><h2 class="header">The Structure of Unit Tests</h2><h3 class="date">March 1st, 2018</h3><div class="content"><p>Recently, I’ve read and watched a lot of things that give great guidelines on writing well structured tests. Many of the guidelines that come up are very similar, so I thought I’d summarize them here.</p>
+<ul>
+<li><a href="http://amzn.to/2FSh5Xo" target="_blank" rel="noopener">Clean Code</a></li>
+<li><a href="https://app.pluralsight.com/library/courses/advanced-unit-testing" target="_blank" rel="noopener">Advanced Unit Testing - A Pluralsight course by Mark Seemann</a></li>
+<li><a href="http://amzn.to/2FdBuom" target="_blank" rel="noopener">Working Effectively with Unit Tests</a></li>
+</ul>
+<h2 id="write-tests-in-four-phases">Write Tests In Four Phases</h2>
+<p>In my opinion, this is the most important guideline. Even if your tests don’t follow the other guidelines, if they all have four distinct phases, they will be easy to understand and refactor later.</p>
+<p>The four phases of a well written test are</p>
+<ul>
+<li>Setup</li>
+<li>Execution</li>
+<li>Assertion</li>
+<li>Teardown</li>
+</ul>
+<p>Teardown isn’t a part of most unit test lifecycles, and if you find yourself needing to teardown something after you’ve unit tested it, you’re probably not testing plain ol’ code.</p>
+<p>If every test sticks to this process and is very clear about which step appears where, they will all be easy to understand.</p>
+<h2 id="dont-touch-the-slow-stuff-database-or-network">Don’t Touch The Slow Stuff (Database or Network)</h2>
+<p>Tests should be fast and deterministic. The easiest way to achieve that is by just testing plain ol’ code. Which is to say, just test functions that have input an output. Don’t test functions with side effects. Don’t test functions that touch the databse. Don’t test functions that talk to the network, etc.</p>
+<p>Not to say you can’t have those things, just that they shouldn’t be part of the core of your application. If you push all your side-effect-y (e.g., database, network) code as far to the edges of your system as possible, your application will be easier to reason about and easier to test.</p>
+<h2 id="test-one-thing">Test One Thing</h2>
+<p>A lot of resources explain the <code>Test One Thing</code> rule with “have one assertion per test” but I believe that’s a little too strict. I think that should be reworked to say “test one concept.” Usually, assertions are implementation details of tests, and testing one concept may require multiple asserts. E.g., when you’re testing more than one property of an object.</p>
+<p>Conceptually, one test should only ever fail for one reason. If a test can fail for more than one reason, that assertion should be broken out into a new test.</p>
+<h2 id="dont-use-control-flow-statements">Don’t Use Control Flow Statements</h2>
+<p>If you’re using control flow statements (<code>if</code>, <code>when</code>, <code>for</code>) in your tests, you should rethink how you’re testing. Tests should never be complex enough to warrant control flow statements. If you ever find yourself wanting to use a control flow statement, write another test!</p>
+</div><div id="disqus_thread"></div>
+<script type="text/javascript">
+	// Disqus
+	
+   /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+   var disqus_shortname = 'codysehl-blog'; // required: replace example with your forum shortname
+   var disqus_disable_mobile = false;
+
+   /* * * DON'T EDIT BELOW THIS LINE * * */
+   (function() {
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+   })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div></div>

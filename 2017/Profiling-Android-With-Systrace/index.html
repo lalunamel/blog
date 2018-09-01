@@ -1,0 +1,128 @@
+<!DOCTYPE html><html><head><title>Using Systrace and Profile GPU Rendering to Reduce Jank in the Tracker Android App — Cody Sehl </title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"><script type="text/javascript" src="/js/ga.js"></script><script type="text/javascript" src="//use.typekit.net/fjx5dfz.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script><link rel="stylesheet" href="/css/prism.css"><script type="text/javascript" src="/js/prism.js"></script></head><body><nav><ul><li><a href="http://codysehl.net/">About</a></li><li><a href="http://codysehl.net/work">Work</a></li><li><a href="http://blog.codysehl.net">Blog</a></li></ul></nav></body></html><div class="blog single-post-page"><div class="sidebar"><ul><li><a href="http://blog.codysehl.net">Recent Posts</a><li><a href="http://blog.codysehl.net/tags/Software/">Software</a></li><li><a href="http://blog.codysehl.net/tags/Android/">Android</a></li><li><a href="http://blog.codysehl.net/tags/Profound-Materials/">Profound Materials</a></li><li><a href="http://blog.codysehl.net/tags/Videos/">Videos</a></li><li><a href="http://blog.codysehl.net/tags/Books/">Books</a></li><li><a href="http://blog.codysehl.net/tags/Reviews/">Reviews</a></li><li><a href="http://blog.codysehl.net/tags/Philosophy/">Philosophy</a></li><li><a href="http://blog.codysehl.net/tags/Startup-Term/">Startup Term</a></li><li><a href="http://blog.codysehl.net/tags/iOS/">iOS</a></li><li><a href="http://blog.codysehl.net/tags/Testing/">Testing</a></li><li><a href="http://blog.codysehl.net/tags/Kotlin/">Kotlin</a></li></li></ul></div><div class="sidebar-wrap"><div class="single-post"><h2 class="header">Using Systrace and Profile GPU Rendering to Reduce Jank in the Tracker Android App</h2><h3 class="date">March 2nd, 2017</h3><div class="content"><p>This post was originally prepared at and for the Pivotal Tracker Team in Denver, CO. <a href="https://pivotaltracker.com/blog/using-systrace-profile-GPU-rendering-Tracker-Android/" target="_blank" rel="noopener">It appears on the Pivotal Tracker blog</a>.</p>
+<p>When the Tracker Team noticed jank while using the <a href="https://www.pivotaltracker.com/blog/android-1.0/" target="_blank" rel="noopener">new and updated</a> Android application we went straight away looking for something like Chrome’s <a href="https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool" target="_blank" rel="noopener">Timeline tool</a>. For Android, that tool is <a href="https://developer.android.com/studio/profile/systrace-commandline.html" target="_blank" rel="noopener">systrace</a>. We also used Android’s native ‘Profile GPU Rendering’ feature to get a more in-depth picture of the bottlenecks in our app’s rendering pipeline.</p>
+<p>This guide is intended as an addition to the official Google documentation <a href="https://developer.android.com/studio/profile/systrace.html" target="_blank" rel="noopener">Analyzing UI Performance with Systrace</a> and the page that describes <a href="https://developer.android.com/studio/profile/systrace-commandline.html" target="_blank" rel="noopener">Systrace</a>; it is written because those pages offer good technical detail and answer a few specific questions, but aren’t organized well and don’t address the general usage of the tool.</p>
+<h3 id="general-information-about-android-performance">General Information About Android Performance</h3>
+<p>Before viewing the results of your trace let’s understand what we’re aiming for when we’re profiling.</p>
+<p>Google has produced a <a href="https://www.youtube.com/playlist?list=PLOU2XLYxmsIKEOXh5TwZEv89aofHzNCiu" target="_blank" rel="noopener">few videos</a> that give a great overview of this topic. The series of videos that are pertinent to this discussion start with “Android Performance Patterns: Rendering Performance 101” and end with “Android Performance Patterns: Overdraw, Cliprect, QuickReject.”</p>
+<p><strong>The golden rule for display performance is as follows:</strong></p>
+<p>Displays render at 60 frames per second, 1000ms exist per second, 1000ms/60fps, therefore <strong>we have 16.66ms to render each frame</strong>.</p>
+<p>Keep this metric in mind as you profile your app. Frames that take longer than 16ms to render will produce visual stutter.</p>
+<h3 id="profile-gpu-rendering">Profile GPU Rendering</h3>
+<p>The easiest way to understand the rendering performance of your app is to use Android’s built in <code>Profile GPU Rendering</code> tool. Google has written <a href="https://developer.android.com/studio/profile/dev-options-rendering.html" target="_blank" rel="noopener">documentation</a> covering how to get it up and running and some basic instructions on how to use it.</p>
+<p>Once you get the profiler running, open your application. The graph at the bottom of your screen will slide to the left as new frames are rendered. The Y axis of the graph represents the render time of each frame. The horizontal green bar at the bottom of the graph represents the 16ms threshold. Frames that take longer than 16ms to render will be slightly wider. If your app has multiple frames above the green line it has entered the <a href="https://youtu.be/ZzQ3eBerHfM?t=54s" target="_blank" rel="noopener">Danger Zone</a> and will look janky.</p>
+<div class="figure">
+<img src="https://imgur.com/5RjmfF1.png" alt="Profile GPU Rendering on an Android Emulator"><p class="caption">Profile GPU Rendering on an Android Emulator</p>
+</div>
+<p>The graph includes many different colors. Take a look at <a href="https://developer.android.com/studio/profile/dev-options-rendering.html" target="_blank" rel="noopener">Google’s handy guide</a> to understand what each of these mean.</p>
+<p>Play around with your app. Do some expensive operations. Note when the graphs rise above the green line. Once you’ve found a few places that do expensive rendering operations, take a closer look using <code>systrace</code>.</p>
+<h3 id="systrace">systrace</h3>
+<p>Just like Chrome’s Timeline tool, <code>systrace</code> captures the operations of your application (using <code>adb</code> and <code>atrace</code>, which uses <code>ftrace</code>) and displays them in a handy timeline format. You can invoke the tool either through Android Studio or via the command line. I prefer (and this post will cover) the latter because it lends a bit more transparency to any errors you encounter in the process. This guide will use <code>systrace</code> with Android 4.3 and higher (the official guide covers using the tool with all versions of Android).</p>
+<h4 id="setup">Setup</h4>
+<p><code>systrace</code> is a python script bundled with the Android SDK and is located in its <code>platform-tools</code> directory. It also requires root access on the device you’re testing on. I recommend using an emulator rather than rooting a physical device.</p>
+<h6 id="so-youll-need">So, you’ll need:</h6>
+<ul>
+<li>Python</li>
+<li>Android SDK</li>
+<li>An emulator (Run with something like Android Studio)</li>
+</ul>
+<p>Once you’ve got those dependencies met, run your application on the emulator.</p>
+<p>Because <code>systrace</code> requires root permissions, open up your terminal and restart adb with <code>adb root</code>.</p>
+<p>On your local machine, change directories to <code>systrace</code> with <code>cd $ANDROID_HOME/platform-tools/systrace</code>.</p>
+<h5 id="before-you-start-tracing">Before you start tracing</h5>
+<p>Here’s a few interesting configuration options. For a complete list, see <a href="https://developer.android.com/studio/profile/systrace-commandline.html" target="_blank" rel="noopener">systrace</a> or <code>python systrace.py --help</code>:</p>
+<ul>
+<li><code>-t &lt;seconds&gt;</code> or <code>--time &lt;seconds&gt;</code> specify the length of time <code>systrace</code> will trace your application</li>
+<li><code>-o &lt;OUTPUT_FILE_PATH.html&gt;</code> specify where you’d like the output to be saved (<code>systrace</code> renders output as an html document)</li>
+</ul>
+<p>Once you’ve got all your options figured out, run something like <code>python systrace.py -t 5 ~/Desktop/android_trace_1.html</code></p>
+<h5 id="errors-you-might-run-into">Errors you might run into</h5>
+<p>Running <code>systrace</code> for the first time resulted in more than a few errors for us. The docs say nothing about most of them, so here are the solutions we found:</p>
+<ul>
+<li><code>ImportError: No module named serial</code>
+<ul>
+<li>Install <code>pip</code>, the python package manager. Then install the <code>serial</code> package with <code>pip install pyserial</code></li>
+</ul></li>
+<li><code>adb cannot run as root in production builds</code>
+<ul>
+<li>You’re running <code>systrace</code> against an unrooted device. Start up the Android emulator instead.</li>
+</ul></li>
+<li><code>IOError: Unable to get atrace data. Did you forget adb root?</code> along with a scary looking stack trace
+<ul>
+<li>You’re not running adb in root mode. Restart it in root mode with <code>adb root</code></li>
+</ul></li>
+<li>If you’ve got multiple emulators or devices running on your machine
+<ul>
+<li>Only run/connect one device or emulator to your machine</li>
+<li>Specify which device to use with <code>-e DEVICE_SERIAL_NUMBER</code></li>
+</ul></li>
+</ul>
+<h5 id="viewing-the-results-of-your-trace">Viewing the results of your trace</h5>
+<p>Go ahead and open up the output of <code>systrace</code> in Chrome (it doesn’t open properly in Firefox). The trace file looks pretty intimidating from the outset, so let’s break it down:</p>
+<ul>
+<li>Navigation</li>
+<li>The tool palette on the right side of the window includes the event selector, pan, zoom, and timespan selector tools
+<ul>
+<li><img src="http://imgur.com/ESpz3hV.png" alt="event selector tool"> The event selector tool allows you to select a single event with a single click, or multiple events by clicking and dragging a selection rectangle</li>
+<li><img src="http://imgur.com/PPC2HXD.png" alt="pan tool"> The pan tool allows you to pan your view up, down, left, and right</li>
+<li><img src="http://imgur.com/5HJA591.png" alt="zoom tool"> The zoom tool allows you to zoom in by clicking and dragging up and down</li>
+<li><img src="http://imgur.com/7cSGGY2.png" alt="timespan selector tool"> The timespan selector allows you to highlight a time range by clicking and dragging left to right</li>
+</ul></li>
+<li>You can view navigation shortcuts with <code>?</code> or with the question mark icon at the top right</li>
+</ul>
+<p>Select the event selector tool by clicking on it in the floating toolbar or by pressing <code>1</code>.</p>
+<h6 id="ui-thread-and-other-threads">UI Thread (and other threads)</h6>
+<p>Click on a slice in the <code>UI Thread</code> section.</p>
+<p>The bottom section of the window will display information about the item you just selected, including it’s name, timing information, and perhaps documentation.</p>
+<p>You’ll notice a thin bar displayed at the top of the <code>UI Thread</code> section. This thin bar is separated into selectable pieces:</p>
+<div class="figure">
+<img src="http://i.imgur.com/f75pyel.png" alt="Thin bar at the top of UI Thread"><p class="caption">Thin bar at the top of UI Thread</p>
+</div>
+<ul>
+<li>Green (Running)</li>
+<li>Code from the thread is running on a CPU. The entry <code>Running instead</code> will describe which CPU is doing the work. You can click on this description to select the block at the top of the page in the <code>kernel</code> section.</li>
+<li>Blue (Runnable)</li>
+<li>Code from the thread is ready to run, but something else is occupying the CPU. The entry <code>Running instead</code> will describe what is running instead of this code.</li>
+<li>Red (Uninterruptible Sleep)</li>
+<li>Code from the thread is sleeping and will not respond to wake up signals. I’m not a systems programmer, but <a href="https://en.wikipedia.org/wiki/Sleep_(system_call)#Uninterruptible_sleep" target="_blank" rel="noopener">Wikipedia tells me</a> this happens while waiting for IO.</li>
+<li>White (Sleeping)</li>
+</ul>
+<h6 id="frames">Frames</h6>
+<p>Click on an <code>F</code> in the <code>Frames</code> section.</p>
+<p>These <code>F</code>s represent frame renders. Green <code>F</code>s mean that a frame has taken less than or equal to 16.6ms to render. Yellow and red means that a frame has taken longer than 16.6ms to render. Selecting a yellow or red frame will describe the problem that caused the long render times.</p>
+<p>Press <code>v</code> to highlight <a href="https://www.youtube.com/watch?v=1iaHxmfZGGc" target="_blank" rel="noopener">VSync boundaries</a> and get a good sense of what 16ms looks like on the graph.</p>
+<h3 id="outcomes-for-the-pivotal-tracker-android-application">Outcomes for the Pivotal Tracker Android Application</h3>
+<p>After learning how to use <code>Profile GPU Rendering</code> and <code>systrace</code>, the Tracker mobile team wielded their powers to squash jank in our new Android application.</p>
+<p>We found that loading and switching between project panel fragments (the various lists of stories available under Backlog, Icebox, etc) caused a significant amount of the jank we saw on the projects page. This happens because the project panel loads many stories, each of which has <em>its</em> own views.</p>
+<p>After investigating a few options (e.g., flattening the view hierarchy) we decided that the quickest and easiest way to reduce jank was to cache the project panel fragments displayed in the project panel list (Backlog, Icebox, Epics, Done, My Work).</p>
+<p>It turns out that when asked to switch from the first to the last tab in its list, the default behavior of a ViewPager is to render all intermediate views along the way. Rendering four (complex!) panels instead of one is a great way to cause jank, but it’s necessary effect for the ViewPager because it creates fluidity and the perception of persistence in the application.</p>
+<p>Rather than rerendering every panel in-between, we cached the project panel fragments with <code>viewPager.setOffscreenPageLimit</code> to reduce visual stutter when switching between project panels. The only downside to this caching is a slight (10MB) increase in memory footprint, which we are willing to pay for the performance gains.</p>
+<div class="figure">
+<img src="http://i.imgur.com/uiKkoqF.png" alt="Backlog to Done Rendering Performance"><p class="caption">Backlog to Done Rendering Performance</p>
+</div>
+<p>As you can see, caching pages on the ViewPager doesn’t increase the speed of rendering a panel the first time it is visited.</p>
+<div class="figure">
+<img src="http://imgur.com/fkqcqHw.png" alt="Backlog to Done to Backlog Rendering Performance"><p class="caption">Backlog to Done to Backlog Rendering Performance</p>
+</div>
+<p>On subsequent renders, though, the rendering speedup is significant. This fix doesn’t address the underlying issues (complex and nested view hierarchies) which would take a long time to diagnose and treat but it does offer a great benefit for a small cost.</p>
+<p><br></p>
+<p>The rendering profiling tools available on the Android platform are quite complicated. Hopefully this post has made clear the concepts behind rendering performance and some of the undocumented aspects of these tools.</p>
+<p>If you’d like to see the results of our profiling in a real world application, be sure to download Pivotal Tracker’s redesigned and rewritten Android Application.</p>
+<p>Make sure to checkout out our previous blog post, <a href="https://www.pivotaltracker.com/blog/reengineering-android/" target="_blank" rel="noopener">Re-Engineering the Pivotal Tracker Android App</a>, for an overview of the technical considerations that went into building Pivotal Tracker for Android.</p>
+</div><div id="disqus_thread"></div>
+<script type="text/javascript">
+	// Disqus
+	
+   /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+   var disqus_shortname = 'codysehl-blog'; // required: replace example with your forum shortname
+   var disqus_disable_mobile = false;
+
+   /* * * DON'T EDIT BELOW THIS LINE * * */
+   (function() {
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+   })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div></div>

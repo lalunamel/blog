@@ -1,5 +1,0 @@
-for post in page.posts.sort('date', 'desc').toArray()
-  section.post
-    a(href="#{post.permalink}")
-      h3.header #{post.title}
-    .description!= post.excerpt

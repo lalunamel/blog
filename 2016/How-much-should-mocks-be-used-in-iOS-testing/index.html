@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><title>How frequently should mocks be used in iOS testing? — Cody Sehl </title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"><script type="text/javascript" src="/js/ga.js"></script><script type="text/javascript" src="//use.typekit.net/fjx5dfz.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script><link rel="stylesheet" href="/css/prism.css"><script type="text/javascript" src="/js/prism.js"></script></head><body><nav><ul><li><a href="http://codysehl.net/">About</a></li><li><a href="http://codysehl.net/work">Work</a></li><li><a href="http://blog.codysehl.net">Blog</a></li></ul></nav></body></html><div class="blog single-post-page"><div class="sidebar"><ul><li><a href="http://blog.codysehl.net">Recent Posts</a><li><a href="http://blog.codysehl.net/tags/Software/">Software</a></li><li><a href="http://blog.codysehl.net/tags/Android/">Android</a></li><li><a href="http://blog.codysehl.net/tags/Profound-Materials/">Profound Materials</a></li><li><a href="http://blog.codysehl.net/tags/Videos/">Videos</a></li><li><a href="http://blog.codysehl.net/tags/Books/">Books</a></li><li><a href="http://blog.codysehl.net/tags/Reviews/">Reviews</a></li><li><a href="http://blog.codysehl.net/tags/Philosophy/">Philosophy</a></li><li><a href="http://blog.codysehl.net/tags/Startup-Term/">Startup Term</a></li><li><a href="http://blog.codysehl.net/tags/iOS/">iOS</a></li><li><a href="http://blog.codysehl.net/tags/Testing/">Testing</a></li><li><a href="http://blog.codysehl.net/tags/Kotlin/">Kotlin</a></li></li></ul></div><div class="sidebar-wrap"><div class="single-post"><h2 class="header">How frequently should mocks be used in iOS testing?</h2><h3 class="date">August 16th, 2016</h3><div class="content"><p>After transitioning from a web to an iOS developer at Pivotal, I’ve had many discussions recently about the Right Way to write tests for iOS/Objective C/object oriented applications. I’d like to document the key points from those discussions so that I can refer to them later and maybe someone else can get some use out of them, too.</p>
+<p>As an aside, it seems, from my limited obeservation of the outside world (i.e., not Pivotal) that tests aren’t a big part of writing iOS applications. That is very strange to me, having been ‘raised’ at Pivotal and on the Tracker Team, where tests (and agile, by extension), are core practices. Regardless of your feeling about wiritng tests, I hope the following will be helpful.</p>
+<p>So, question:</p>
+<p><strong>How frequently should mocks be used in tests?</strong></p>
+<p>I’m using the word <em>mock</em> in the sense of <a href="http://www.github.com/pivotal/cedar" target="_blank" rel="noopener">Cedar</a>, the lovely testing framework by Pivotal that uses RSpec-like BDD syntax. A mock in Cedar is created with <code>nice_fake_for([Dog class])</code> or <code>fake_for([Dog class])</code>, where the first creates an object that <em>is a</em> <code>Dog</code> and conforms to the interface of (implements the methods defined on) <code>Dog</code>, and the second merely creates an object that <em>is a</em> <code>Dog</code>.</p>
+<p>A view expressed by a more experienced iOS developer <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> was roughly that mocks should only be employed at architectual boundries<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>. Moreover, using mocks introduces maintenance costs that dont exist when using <a href="https://thoughtbot.com/upcase/videos/factory-girl?utm_source=github&amp;utm_medium=open-source&amp;utm_campaign=factory-girl" target="_blank" rel="noopener">factories</a>, because every time the method <code>Dog.haveDinner</code> changes I have to update my fakes and expectations with the new signature. A small iOS sidenote is that mocks don’t work with Objective C’s Key-Value system<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>.</p>
+<p>My philosophy is that mocks should be used as much as possible. The thought is that the unit under test should be ignorant of the side effects of its calling of a method on another object. That is to say that the method</p>
+<pre class="lang-java"><code>Bowl bowl;
+Dog.haveDinner {
+    bowl.eat()
+}</code></pre>
+<p>should be ignorant of the effects of calling <code>bowl.eat</code>, and the test shouldn’t have to deal with the internals of <code>Bowl</code>, and only assert that <code>Bowl.eat</code> was called.</p>
+<p>By not using mocks, your test code will necessarily execute the implimentation of whatever method your unit is calling, causing a cascade of method calls you have to account for and slowing down your tests a bit. This breaks one tenet of unit testing: that the unit under test should be ignorant of its dependencies’ internals.</p>
+<p>This isn’t so bad when the dependency is a simple data container POJO (or POOCO, or whatever), but that’s rarely the case.</p>
+<p>The point that using mock objects introduces more maintenance costs is not as significant as one might expect. Say you’ve written several tests that mock out <code>Dog</code> and <code>Dog.haveDinner</code> and make some expectations on <code>Dog.haveDinner</code>. Now you add a parameter to <code>Dog.haveDinner</code> and uh-oh, you’ve changed the method signature and have to go through and add that parameter to your test code! This can be solved by your handy-dandy IDE and its refactor functionality. Any IDE worth its salt<a href="#fn4" class="footnoteRef" id="fnref4"><sup>4</sup></a> will allow you to rename a method and highlight all its usages that need to change. If you’re confident, you can even use find and replace<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a> to do all the heavy lifting.</p>
+<p>An alternative to mocks are factories. I dislike factories in unit tests because they require that you <a href="https://www.youtube.com/watch?v=7s664NsLeFM" target="_blank" rel="noopener">create and manage the world</a>. Either you create the world in every test, which is quite a bit of boilerplate code, or you have something like factory_girl create the world in a single place, which is overkill for testing the interaction of a class and its dependencies.</p>
+<p>Those are my reasons for using mocks in as many places as I can; basically, they’re simple and don’t require any knowledge of a unit’s dependencies. If you have any thoughts about using and not using mocks, be sure to drop me a line!</p>
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn1"><p>In fairness, the developer hasn’t had a chance to respond to my criticisms, and it’s always possible I’ve misinterpreted their stated opinion.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>I’m not actually sure what was meant by the phrase ‘architectual boundries.’ Here, I’ve taken it to mean points of integration with third parties (e.g., making a network request that might fail or take a long time to complete)<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>I’ve never actually seen KVO used in production, nor have I ever thought things would be simpler if I could observe an object’s value and respond to changes without its knowledge. See <em>event soup</em>.<a href="#fnref3">↩</a></p></li>
+<li id="fn4"><p>Notice I didn’t mention XCode by name here. That is because XCode is not worth it’s stalt. It’s worth something less valuable than salt, to be clear. It is missing many helpful features available in most other IDEs (e.g., refactoring).<a href="#fnref4">↩</a></p></li>
+<li id="fn5"><p>If, for some odd reason, your beautiful IDE doesn’t have support for method refactoring. But why would anyone use anything like that?<a href="#fnref5">↩</a></p></li>
+</ol>
+</div>
+</div><div id="disqus_thread"></div>
+<script type="text/javascript">
+	// Disqus
+	
+   /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+   var disqus_shortname = 'codysehl-blog'; // required: replace example with your forum shortname
+   var disqus_disable_mobile = false;
+
+   /* * * DON'T EDIT BELOW THIS LINE * * */
+   (function() {
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+   })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div></div>

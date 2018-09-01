@@ -1,0 +1,70 @@
+<h1 id="octicons">Octicons!</h1>
+<p>This is the <a href="http://bower.io/">Bower</a> package for <a href="http://octicons.github.com">GitHub Octicons</a>.</p>
+<h2 id="add-octicons-to-your-project">Add Octicons to your project</h2>
+<ol style="list-style-type: decimal">
+<li><p>Create a new file called <em>bower.json</em> (if you don’t have one already).</p></li>
+<li><p>Add a new line for the Octicon dependency, pointing to the correct repository:</p></li>
+</ol>
+<p><code>json   {     &quot;name&quot;: &quot;my_great_project&quot;,     &quot;dependencies&quot;: {       &quot;octicons&quot;: &quot;*&quot;     }   }</code></p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>Run <code>bower install</code>. The Octicons styles will be downloaded to <em>bower_components/octicons</em>.</p></li>
+<li><p>Link to the <code>octicons.css</code> stylesheet in the <code>&lt;head&gt;</code> of your <code>&lt;html&gt;</code> page:</p></li>
+</ol>
+<p><code>html   &lt;link rel=&quot;stylesheet&quot; href=&quot;bower_components/octicons/octicons/octicons.css&quot;&gt;</code></p>
+<ol start="4" style="list-style-type: decimal">
+<li>Simply use an icon in your HTML page:</li>
+</ol>
+<p><code>html   &lt;span class=&quot;octicon octicon-microscope&quot;&gt;&lt;/span&gt;</code></p>
+<h3 id="rails-asset-pipeline">Rails’ asset pipeline</h3>
+<p>Octicons includes a stylesheet specifically for <a href="http://guides.rubyonrails.org/asset_pipeline.html">Rails 4/Sprockets</a>.</p>
+<ol style="list-style-type: decimal">
+<li><p>Create a new file called <em>vendor/assets/bower.json</em> (if you don’t have one already).</p></li>
+<li><p>Add a new line for the Octicon dependency, pointing to the correct repository:</p></li>
+</ol>
+<p><code>json   {     &quot;name&quot;: &quot;my_great_project&quot;,     &quot;dependencies&quot;: {       &quot;octicons&quot;: &quot;*&quot;     }   }</code></p>
+<ol start="3" style="list-style-type: decimal">
+<li><p><code>cd</code> into <code>vendor/assets</code> and run <code>bower install</code>. The Octicons styles will be downloaded to <em>vendor/assets/bower_components/octicons</em>.</p></li>
+<li><p>Open your config/application.rb, and add this line inside your Application:</p></li>
+</ol>
+<p><code>ruby   config.assets.precompile += %w(*.svg *.eot *.woff *.ttf)</code></p>
+<ol start="5" style="list-style-type: decimal">
+<li>In your application stylesheet, require <code>sprockets-octicons</code>:</li>
+</ol>
+<p><code>css   /*   = require sprockets-octicons   */</code></p>
+<ol start="6" style="list-style-type: decimal">
+<li>Simply use an icon in your HTML page:</li>
+</ol>
+<p><code>html   &lt;span class=&quot;octicon octicon-flame&quot;&gt;&lt;/span&gt;</code></p>
+<ol start="7" style="list-style-type: decimal">
+<li>If you want a view helper, add something like this to <em>app/helpers/application_helper.rb</em>:</li>
+</ol>
+<p><code>ruby   def octicon(code)     content_tag :span, '', :class =&gt; &quot;octicon octicon-#{code.to_s.dasherize}&quot;   end</code></p>
+<h2 id="best-practices">Best practices</h2>
+<ul>
+<li>Octicons look best in sizes that are multiples of 16px. You can update the size using the <code>font-size</code> CSS property. For example:</li>
+</ul>
+<p><code>css   .octicon {     font-size: 32px;   }</code></p>
+<ul>
+<li>Octicons are not monospaced. This lets them work well next to type, but it means they won’t stack nicely by default. If you intend to stack octicons, such as in navigation, you will want to add some CSS to make them the same width, and centered. For example:</li>
+</ul>
+<p><code>css   .navigation .octicon {     width: 16px;     text-align: center;   }</code></p>
+<h3 id="resources">Resources</h3>
+<ul>
+<li><a href="http://octicons.github.com/">octicons.github.com</a> - the Octicons website</li>
+<li>Read why <a href="http://css-tricks.com/examples/IconFont/">icon fonts are awesome</a></li>
+<li>How to compose your <a href="http://css-tricks.com/html-for-icon-font-usage/">HTML for icon font usage</a></li>
+</ul>
+<h2 id="why-cant-i-see-the-characters-in-font-book">Why can’t I see the characters in Font Book??</h2>
+<p>Give this a try, you should be all set:</p>
+<div class="figure">
+<img src="http://cl.ly/image/2r1B1F2l3Q0D/content#png" />
+</div>
+<h2 id="faq">FAQ</h2>
+<p>Check out <a href="https://github.com/github/octicons/issues?q=is%3Aclosed+is%3Aissue+label%3AFAQ">issues with the FAQ label</a>.</p>
+<h2 id="versions">Versions</h2>
+<p>Octicons operates similarly to <a href="http://semver.org/">Semver</a> with the following version convention:</p>
+<ul>
+<li>Major: Breaking changes — removed icons, markup changes, unicode switches, css renames, icon redesigns</li>
+<li>Minor: Non-breaking changes — new icons, new aliases, minor icon changes</li>
+<li>Patch: Unnoticeable tweaks — slight visual changes, package updates</li>
+</ul>

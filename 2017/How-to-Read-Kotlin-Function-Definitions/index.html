@@ -1,0 +1,90 @@
+<!DOCTYPE html><html><head><title>How to Read Kotlin Function Definitions — Cody Sehl </title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"><script type="text/javascript" src="/js/ga.js"></script><script type="text/javascript" src="//use.typekit.net/fjx5dfz.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script><link rel="stylesheet" href="/css/prism.css"><script type="text/javascript" src="/js/prism.js"></script></head><body><nav><ul><li><a href="http://codysehl.net/">About</a></li><li><a href="http://codysehl.net/work">Work</a></li><li><a href="http://blog.codysehl.net">Blog</a></li></ul></nav></body></html><div class="blog single-post-page"><div class="sidebar"><ul><li><a href="http://blog.codysehl.net">Recent Posts</a><li><a href="http://blog.codysehl.net/tags/Software/">Software</a></li><li><a href="http://blog.codysehl.net/tags/Android/">Android</a></li><li><a href="http://blog.codysehl.net/tags/Profound-Materials/">Profound Materials</a></li><li><a href="http://blog.codysehl.net/tags/Videos/">Videos</a></li><li><a href="http://blog.codysehl.net/tags/Books/">Books</a></li><li><a href="http://blog.codysehl.net/tags/Reviews/">Reviews</a></li><li><a href="http://blog.codysehl.net/tags/Philosophy/">Philosophy</a></li><li><a href="http://blog.codysehl.net/tags/Startup-Term/">Startup Term</a></li><li><a href="http://blog.codysehl.net/tags/iOS/">iOS</a></li><li><a href="http://blog.codysehl.net/tags/Testing/">Testing</a></li><li><a href="http://blog.codysehl.net/tags/Kotlin/">Kotlin</a></li></li></ul></div><div class="sidebar-wrap"><div class="single-post"><h2 class="header">How to Read Kotlin Function Definitions</h2><h3 class="date">December 4th, 2017</h3><div class="content"><p>In case you <a href="https://blog.jetbrains.com/kotlin/2017/05/kotlin-on-android-now-official/" target="_blank" rel="noopener">missed</a> <a href="https://spring.io/blog/2017/01/04/introducing-kotlin-support-in-spring-framework-5-0" target="_blank" rel="noopener">it</a>, <a href="https://kotlinlang.org/" target="_blank" rel="noopener">Kotlin</a> is now the <a href="https://www.youtube.com/watch?v=TkVjkvaeFnQ" target="_blank" rel="noopener">cool kid</a> on the block.</p>
+<p>It’s got all the advantages of Java and a great syntax with modern language features. Unfortunately, the documentation is a bit hard to parse if you’ve had limited experience with functional programming. Specifically, documentation for functions can look <em>really weird</em>.</p>
+<p>So, let’s learn how to read function definitions/declarations! We’ll look at a few and break them down piece by piece.</p>
+<h3 id="the-general-pattern-1">The general pattern <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></h3>
+<p>Here’s how the documentation for functions normally looks. You can use this as reference as you continue the guide.</p>
+<p>Optional elements of a function definition are in curly braces <code>{}</code>.</p>
+<pre><code>{FUNCTION_TYPE} fun {&lt;GENERIC_TYPES&gt;} {OBJECT.}FUNCTION_NAME(
+  PARAMETER_NAME: PARAMETER_TYPE,
+  ...MORE PARAMETERS...
+): RETURN_TYPE</code></pre>
+<p><code>FUNCTION_TYPE</code> defines what type of function is being declared. A non-exhaustive list of function types:</p>
+<ul>
+<li><code>private</code></li>
+<li><code>protected</code></li>
+<li><code>public</code></li>
+<li><a href="https://kotlinlang.org/docs/reference/classes.html#overriding-rules" target="_blank" rel="noopener"><code>open</code></a> allows subclasses to <code>override</code> this function. <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a></li>
+<li><a href="https://kotlinlang.org/docs/reference/inline-functions.html#inline-functions" target="_blank" rel="noopener"><code>inline</code></a> puts your function right into your Kotlin source rather than creating an object behind the scenes and managing references to the variables it’s closed over. You’d want to use this for performance reasons<br></li>
+<li><a href="https://kotlinlang.org/docs/reference/functions.html#infix-notation" target="_blank" rel="noopener"><code>infix</code></a> makes it so that you can call functions without dots</li>
+<li><a href="https://kotlinlang.org/docs/reference/functions.html#tail-recursive-functions" target="_blank" rel="noopener"><code>tailrec</code></a> converts <a href="https://stackoverflow.com/questions/33923/what-is-tail-recursion#comment57405901_33923" target="_blank" rel="noopener">tail-recursive</a> (like normal recursion, but you go the other way) functions into regular loops, which is more efficient</li>
+</ul>
+<p><code>fun</code> is how you declare a function. It’s fun! Right?!</p>
+<p><a href="https://kotlinlang.org/docs/reference/generics.html" target="_blank" rel="noopener"><code>GENERIC_TYPES</code></a> are things used in the rest of the function. They don’t have any meaning in themselves, just to say something is of one type or another but it doesn’t matter <em>which</em> type it is.</p>
+<p><code>OBJECT</code> is the object the function is defined on.</p>
+<p><code>FUNCTION_NAME</code> is self-explanatory.</p>
+<p><code>PARAMETER_NAME</code> also the above.</p>
+<p><code>PARAMETER_TYPE</code> is self explanatory, but parameters can get confusing fast if you’re passing functions around.</p>
+<p><code>RETURN_TYPE</code> is self-explanatory.</p>
+<h3 id="list.map"><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/map.html" target="_blank" rel="noopener">List.map</a></h3>
+<pre class="lang-kotlin"><code>inline fun &lt;T, R&gt; Array&lt;out T&gt;.map(
+  transform: (T) -&gt; R
+): List&lt;R&gt;</code></pre>
+<p>Here’s what we get from this definition, part by part:</p>
+<ul>
+<li>it’s an inline function, so it doesn’t close over any variables</li>
+<li>it uses two types, <code>T</code> and <code>R</code>, that will be <code>T</code>ransformed and <code>R</code>eturned</li>
+<li>it returns an array with elements of type <code>T</code><a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a></li>
+<li>it takes a function. That function takes a variable of type <code>T</code> and returns a variable of type <code>R</code>. This is the function that does the mapping from one element to another</li>
+<li>it returns a list with elements of type <code>R</code></li>
+</ul>
+<h3 id="list.reduce"><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/reduce.html" target="_blank" rel="noopener">List.reduce</a></h3>
+<pre class="lang-kotlin"><code>inline fun &lt;S, T : S&gt; Array&lt;out T&gt;.reduce(
+  operation: (acc: S, T) -&gt; S
+): S</code></pre>
+<ul>
+<li>it’s an inline function. No closure for you!</li>
+<li>it uses two types, <code>S</code> and <code>T</code>, that represent the type of the accumulated value and the type of the elements the function is accumulating. <code>T</code> inherits from <code>S</code>.</li>
+<li>it takes one parameter, a function named <code>operation</code>. The function takes a parameter named <code>acc</code> of type <code>S</code>, and another of type <code>T</code> and returns a value of type <code>S</code></li>
+<li>it returns a value of type <code>S</code></li>
+</ul>
+<h3 id="list.binarysearch"><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/binary-search.html" target="_blank" rel="noopener">List.binarySearch</a></h3>
+<pre class="lang-kotlin"><code>fun &lt;T : Comparable&lt;T&gt;&gt; List&lt;T?&gt;.binarySearch(
+  element: T?,
+  fromIndex: Int = 0,
+  toIndex: Int = size
+): Int</code></pre>
+<ul>
+<li>it uses a type <code>T</code> that inherits from <code>Comparable</code></li>
+<li>it’s defined on a <code>List</code> of elements of type T that might be null (<code>?</code>)</li>
+<li>it takes three parameters, the last two defaulting to <code>0</code> and <code>List.size</code> if not given</li>
+<li>it returns an Int</li>
+</ul>
+<h3 id="hope-that-helps">Hope that helps!</h3>
+<p>Want to know something I didn’t cover? Was I incorrect? Do you understand compiler stuff and want to explain what <code>out</code> means?</p>
+<p>Drop me a line — I’d love to hear from you!</p>
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Read the <a href="https://kotlinlang.org/docs/reference/functions.html" target="_blank" rel="noopener">documentation for functions</a> for sure, just know it takes a bit of parsing to really understand it.<a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p>See <a href="https://kotlinlang.org/docs/reference/classes.html#overriding-methods" target="_blank" rel="noopener">here</a>. Presumably, this keyword is only allowed on functions in classes (it’s also allowed on classes themselves), but I couldn’t find any documentation to that effect.<a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p>What’s <code>out</code> doing here? That’s a very good question! I’ve read the <a href="https://kotlinlang.org/docs/reference/generics.html#declaration-site-variance" target="_blank" rel="noopener">docs</a>, and I get it, but I can’t explain it well so I’ll come back later and update this post when I do!<a href="#fnref3">↩</a></p></li>
+</ol>
+</div>
+</div><div id="disqus_thread"></div>
+<script type="text/javascript">
+	// Disqus
+	
+   /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+   var disqus_shortname = 'codysehl-blog'; // required: replace example with your forum shortname
+   var disqus_disable_mobile = false;
+
+   /* * * DON'T EDIT BELOW THIS LINE * * */
+   (function() {
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+   })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div></div>
