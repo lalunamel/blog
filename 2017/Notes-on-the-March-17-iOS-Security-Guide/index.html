@@ -1,106 +1,136 @@
 <!DOCTYPE html><html><head><title>Notes on the March '17 Edition of the iOS Security Guide — Cody Sehl </title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"><script type="text/javascript" src="/js/ga.js"></script><script type="text/javascript" src="//use.typekit.net/fjx5dfz.js"></script>
-<script type="text/javascript">try{Typekit.load();}catch(e){}</script><link rel="stylesheet" href="/css/prism.css"><script type="text/javascript" src="/js/prism.js"></script></head><body><nav><ul><li><a href="http://codysehl.net/">About</a></li><li><a href="http://codysehl.net/work">Work</a></li><li><a href="http://blog.codysehl.net">Blog</a></li></ul></nav></body></html><div class="blog single-post-page"><div class="sidebar"><ul><li><a href="http://blog.codysehl.net">Recent Posts</a><li><a href="http://blog.codysehl.net/tags/Software/">Software</a></li><li><a href="http://blog.codysehl.net/tags/Android/">Android</a></li><li><a href="http://blog.codysehl.net/tags/Profound-Materials/">Profound Materials</a></li><li><a href="http://blog.codysehl.net/tags/Videos/">Videos</a></li><li><a href="http://blog.codysehl.net/tags/Books/">Books</a></li><li><a href="http://blog.codysehl.net/tags/Reviews/">Reviews</a></li><li><a href="http://blog.codysehl.net/tags/Philosophy/">Philosophy</a></li><li><a href="http://blog.codysehl.net/tags/Startup-Term/">Startup Term</a></li><li><a href="http://blog.codysehl.net/tags/iOS/">iOS</a></li><li><a href="http://blog.codysehl.net/tags/Testing/">Testing</a></li><li><a href="http://blog.codysehl.net/tags/Kotlin/">Kotlin</a></li></li></ul></div><div class="sidebar-wrap"><div class="single-post"><h2 class="header">Notes on the March '17 Edition of the iOS Security Guide</h2><h3 class="date">July 19th, 2017</h3><div class="content"><p>This post was originally prepared at and for the Pivotal Tracker Team in Denver, CO. <a href="https://pivotaltracker.com/blog/notes-on-march-2017-ios-security-guide/" target="_blank" rel="noopener">It appears on the Pivotal Tracker blog</a>.</p>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script><link rel="stylesheet" href="/css/prism.css"><script type="text/javascript" src="/js/prism.js"></script><meta name="generator" content="Hexo 5.4.2"></head><body><nav><ul><li><a target="_blank" rel="noopener" href="http://codysehl.net/">About</a></li><li><a target="_blank" rel="noopener" href="http://codysehl.net/work">Work</a></li><li><a href="http://blog.codysehl.net">Blog</a></li></ul></nav></body></html><div class="blog single-post-page"><div class="sidebar"><ul><li><a href="http://blog.codysehl.net">Recent Posts</a><li><a href="http://blog.codysehl.net/tags/Software/">Software</a></li><li><a href="http://blog.codysehl.net/tags/Android/">Android</a></li><li><a href="http://blog.codysehl.net/tags/Profound-Materials/">Profound Materials</a></li><li><a href="http://blog.codysehl.net/tags/Videos/">Videos</a></li><li><a href="http://blog.codysehl.net/tags/Books/">Books</a></li><li><a href="http://blog.codysehl.net/tags/Reviews/">Reviews</a></li><li><a href="http://blog.codysehl.net/tags/Philosophy/">Philosophy</a></li><li><a href="http://blog.codysehl.net/tags/Startup-Term/">Startup Term</a></li><li><a href="http://blog.codysehl.net/tags/iOS/">iOS</a></li><li><a href="http://blog.codysehl.net/tags/Testing/">Testing</a></li><li><a href="http://blog.codysehl.net/tags/Kotlin/">Kotlin</a></li></li></ul></div><div class="sidebar-wrap"><div class="single-post"><h2 class="header">Notes on the March '17 Edition of the iOS Security Guide</h2><h3 class="date">July 19th, 2017</h3><div class="content"><p>This post was originally prepared at and for the Pivotal Tracker Team in Denver, CO. <a target="_blank" rel="noopener" href="https://pivotaltracker.com/blog/notes-on-march-2017-ios-security-guide/">It appears on the Pivotal Tracker blog</a>.</p>
 <p>Additions and clarifications from external sources where noted.</p>
 <h3 id="encryption">Encryption</h3>
-<p>When new files are created on device, they are automatically assigned a “Data Protection Class” that determines under what conditions the file may be read/written</p>
+<p>When new files are created on device, they are automatically assigned a "Data Protection Class" that determines under what conditions the file may be read/written</p>
 <p>They are:</p>
 <ul>
-<li>Available when unlocked (NSFileProtectionComplete)</li>
-<li><p>Only allowed access when the device is unlocked</p></li>
-<li>Available on create and after open (NSFileProtectionCompleteUnlessOpen)</li>
-<li>This one is difficult to explain simply. Check out the <a href="https://developer.apple.com/reference/foundation/nsfileprotectioncompleteunlessopen" target="_blank" rel="noopener">docs</a> for more info.</li>
+<li>Available when unlocked (NSFileProtectionComplete)
+<ul>
+<li>Only allowed access when the device is unlocked</li>
+</ul></li>
+<li>Available on create and after open (NSFileProtectionCompleteUnlessOpen)
+<ul>
+<li>This one is difficult to explain simply. Check out the <a target="_blank" rel="noopener" href="https://developer.apple.com/reference/foundation/nsfileprotectioncompleteunlessopen">docs</a> for more info.</li>
 <li>If file is created when device is locked
 <ul>
 <li>Can access file until it is closed</li>
-<li>After file is closed, can’t open again until unlock</li>
+<li>After file is closed, can't open again until unlock</li>
 </ul></li>
 <li>If file is opened when device is unlocked
 <ul>
 <li>Can access file even if device is locked again</li>
 </ul></li>
-<li>Available after first unlock (NSFileProtectionCompleteUntilFirstUserAuthentication)</li>
-<li><p>Is the default data protection class for all third party app files, unless otherwise specified</p></li>
-<li>Always available (NSFileProtectionNone)</li>
+</ul></li>
+<li>Available after first unlock (NSFileProtectionCompleteUntilFirstUserAuthentication)
+<ul>
+<li>Is the default data protection class for all third party app files, unless otherwise specified</li>
+</ul></li>
+<li>Always available (NSFileProtectionNone)
+<ul>
 <li>Not encrypted with a passcode, but the device UID it sounds like.</li>
-<li><p>So, you’re unable to read the files if you don’t have access to the device.</p></li>
+<li>So, you're unable to read the files if you don't have access to the device.</li>
+</ul></li>
 </ul>
 <h3 id="keychain">Keychain</h3>
-<p>See <a href="https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html#//apple_ref/doc/uid/TP30000897-CH204-CJBIBIBC" target="_blank" rel="noopener">Keychain Services Programming Guide</a></p>
+<p>See <a target="_blank" rel="noopener" href="https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html#//apple_ref/doc/uid/TP30000897-CH204-CJBIBIBC">Keychain Services Programming Guide</a></p>
 <p>The Keychain is implemented as a database stored on the file system.</p>
 <p>There is only one keychain database. The <code>securityd</code> daemon manages access.</p>
 <p>On macOS, every new user is assigned a keychain called <code>login.keychain</code> On iOS, there is one keychain used by all applications</p>
 <p>A keychain item has data (the stuff you want to keep secret), and metadata about the item.</p>
 <p>Keychain items can be synced with iCloud with by setting the <code>kSecAttrSynchronizable</code> attribute to <code>kCFBooleanTrue</code> Shared items may only be used by apps with the same TEAM_ID</p>
 <p>On iOS, encrypted keychain items are by default not available when the device is locked. This behavior can be changed by assigning a <code>Keychain Protection Class</code> to a keychain item.</p>
-<p>Keychain access is determined by an app’s - <code>keychain-access-groups</code> (called ‘Keychain Groups’ in XCode under Project Settings -&gt; Capabilities -&gt; Keychain Sharing) - <code>application-identifier</code> - described in the <a href="https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/AppID.html" target="_blank" rel="noopener">Cocoa Core Competencies Docs</a> - is <code>TEAM_ID</code>+<code>BUNDLE_IDENTIFIER</code> - <code>application-group</code></p>
-<p>Keychain items can’t be shared between applications made by different developers</p>
+<p>Keychain access is determined by an app's - <code>keychain-access-groups</code> (called 'Keychain Groups' in XCode under Project Settings -&gt; Capabilities -&gt; Keychain Sharing) - <code>application-identifier</code> - described in the <a target="_blank" rel="noopener" href="https://developer.apple.com/library/content/documentation/General/Conceptual/DevPedia-CocoaCore/AppID.html">Cocoa Core Competencies Docs</a> - is <code>TEAM_ID</code>+<code>BUNDLE_IDENTIFIER</code> - <code>application-group</code></p>
+<p>Keychain items can't be shared between applications made by different developers</p>
 <p>Similar to file encryption, keychain items are assigned a <code>Keychain Protection Class</code>:</p>
 <ul>
 <li><p>Available when unlocked (<code>kSecAttrAccessibleWhenUnlocked</code>) Only allowed access when the device is unlocked</p></li>
 <li><p>Available after first unlock (<code>kSecAttrAccessibleAfterFirstUnlock</code>) Just what it says.</p></li>
-<li><p>Always available (<code>kSecAttrAccessibleAlways</code>) Not encrypted with a passcode, but the device UID. So, you’re unable to read the files if you don’t have access to the device.</p></li>
-<li><p>Passcode enabled (<code>kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly</code>) The same as “Available when unlocked” except that the item is only available on devices with a passcode. If passcode is removed, items are deleted. Items are not migrated to a new device. Items are not synced to iCloud keychain. Items are not backed up. Items are not included in escrow keybags.</p></li>
+<li><p>Always available (<code>kSecAttrAccessibleAlways</code>) Not encrypted with a passcode, but the device UID. So, you're unable to read the files if you don't have access to the device.</p></li>
+<li><p>Passcode enabled (<code>kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly</code>) The same as "Available when unlocked" except that the item is only available on devices with a passcode. If passcode is removed, items are deleted. Items are not migrated to a new device. Items are not synced to iCloud keychain. Items are not backed up. Items are not included in escrow keybags.</p></li>
 </ul>
 <p>When accessing the keychain for background refresh services (e.g., on receipt of remote notifications), Apple recommends using <code>kSecAttrAccessibleAfterFirstUnlock</code></p>
 <h3 id="signing">Signing</h3>
-<p>iOS requires that apps are signed to ensure they haven’t been tampered with after they’ve left the developer’s hands.</p>
+<p>iOS requires that apps are signed to ensure they haven't been tampered with after they've left the developer's hands.</p>
 <p>Stock apps (e.g., Safari) have been signed by apple directly. Third part apps (i.e., yours) have been signed by you with a certificate provided by apple.</p>
 <p>The system will do a runtime signature check of any frameworks used by a third party app to verify their authenticity.</p>
-<p>What a dig from the iOS Security Guide: “Unlike other mobile platforms, iOS doesn’t allow users to install potentially malicious unsigned apps from websites, or run untrusted code.”</p>
-<p>At runtime, the operating system will also verify the signature of paged memory to make sure it hasn’t been modified since last run. Intense.</p>
+<p>What a dig from the iOS Security Guide: "Unlike other mobile platforms, iOS doesn't allow users to install potentially malicious unsigned apps from websites, or run untrusted code."</p>
+<p>At runtime, the operating system will also verify the signature of paged memory to make sure it hasn't been modified since last run. Intense.</p>
 <h3 id="app-sandboxing">App Sandboxing</h3>
 <p>Every third party app is sandboxed - it gets its own filesystem container and cant touch the containers of other apps.</p>
 <p>A new sandbox is generated and randomly assigned at app install.</p>
 <p>If the app needs to access resources provided by the system, it does so through APIs provided by apple, not direct access to the filesystem/processes Access to these resources are controlled through Entitlements</p>
-<p>The OS uses <a href="https://en.wikipedia.org/wiki/Address_space_layout_randomization" target="_blank" rel="noopener">Address Space Layout Randomization</a> to reduce the likelihood of a successful buffer overflow attack</p>
+<p>The OS uses <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Address_space_layout_randomization">Address Space Layout Randomization</a> to reduce the likelihood of a successful buffer overflow attack</p>
 <h3 id="ssl">SSL</h3>
 <p>App Transport Security enforces, by default, the use of secure standards when communicating over the network Apps must explicitly declare they wish to use insecure methods of communication</p>
 <h3 id="important-concepts">Important concepts</h3>
 <ul>
-<li>App groups</li>
-<li>Described in <a href="https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/ExtensionScenarios.html" target="_blank" rel="noopener">Sharing Data with Your Containing App</a> and the <code>App Groups</code> section of the iOS Security Guide</li>
+<li>App groups
+<ul>
+<li>Described in <a target="_blank" rel="noopener" href="https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/ExtensionScenarios.html">Sharing Data with Your Containing App</a> and the <code>App Groups</code> section of the iOS Security Guide</li>
 <li>Allows sharing <code>NSUserDefaults</code> (simple key value store) between app and extensions</li>
 <li>Allows sharing container directories (what does this actually achieve?)</li>
-<li><p>Allows sharing keychain items</p></li>
-<li>Keybag</li>
+<li>Allows sharing keychain items</li>
+</ul></li>
+<li>Keybag
+<ul>
 <li>Are a way of categorizing types of keys</li>
 <li>There are many different types: User, Device, Backup, Escrow, iCloud Backup</li>
-<li><p>Keys for both File Data Protection and Keychain Data Protection classes are stored in keybags</p></li>
-<li>Effaceable Storage</li>
-<li><p>Storage that is guaranteed, at a hardware level, to delete data properly</p></li>
-<li>Entitlements</li>
+<li>Keys for both File Data Protection and Keychain Data Protection classes are stored in keybags</li>
+</ul></li>
+<li>Effaceable Storage
+<ul>
+<li>Storage that is guaranteed, at a hardware level, to delete data properly</li>
+</ul></li>
+<li>Entitlements
+<ul>
 <li>Define an API for Apple provided frameworks, specifically, things that would normally require root permissions on unix system</li>
 <li>Created so that applications must explicitly ask for permission to use system functionality. This minimizes the damage possible if your app is exploited.</li>
-<li><p>Are cryptographically signed so they’re not easy to spoof</p></li>
-<li>Extensions</li>
-<li>“The system automatically detects extensions at install time and makes them available to other apps using a matching system.” - iOS Security Guide</li>
-<li>Extensions and the apps their based on don’t have direct access to each other’s files or memory</li>
-<li><p>Extension receive the same privacy settings as their parent applications</p></li>
-<li>Core data, NSData, SQLite</li>
-<li><p>Are encrypted by default</p></li>
-<li>Passcodes</li>
-<li><p>Passcodes are stored with an iteration count of ~80ms. That is, it takes ~80ms to check if an entered passcode is correct. Tries between brute force attacks take at least that long.</p></li>
-<li>Containers (filesystem/directory)</li>
-<li>See Apple’s <a href="https://developer.apple.com/library/content/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html#//apple_ref/doc/uid/TP40010672-CH2-SW12" target="_blank" rel="noopener">Filesystem Overview</a></li>
+<li>Are cryptographically signed so they're not easy to spoof</li>
+</ul></li>
+<li>Extensions
+<ul>
+<li>"The system automatically detects extensions at install time and makes them available to other apps using a matching system." - iOS Security Guide</li>
+<li>Extensions and the apps their based on don't have direct access to each other's files or memory</li>
+<li>Extension receive the same privacy settings as their parent applications</li>
+</ul></li>
+<li>Core data, NSData, SQLite
+<ul>
+<li>Are encrypted by default</li>
+</ul></li>
+<li>Passcodes
+<ul>
+<li>Passcodes are stored with an iteration count of ~80ms. That is, it takes ~80ms to check if an entered passcode is correct. Tries between brute force attacks take at least that long.</li>
+</ul></li>
+<li>Containers (filesystem/directory)
+<ul>
+<li>See Apple's <a target="_blank" rel="noopener" href="https://developer.apple.com/library/content/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html#//apple_ref/doc/uid/TP40010672-CH2-SW12">Filesystem Overview</a></li>
 <li>Are sandbox directories</li>
 <li>Third party apps are not allowed direct access to the iOS filesystem, and instead have access to the container in which they live</li>
 <li>iCloud also has its own container</li>
-<li><p>Limit the damage done if your app is compromised</p></li>
-<li>Device UID</li>
-<li>A device’s unique ID</li>
-<li><p>256 bit key baked into the device processor at manufacture time</p></li>
+<li>Limit the damage done if your app is compromised</li>
+</ul></li>
+<li>Device UID
+<ul>
+<li>A device's unique ID</li>
+<li>256 bit key baked into the device processor at manufacture time</li>
+</ul></li>
 </ul>
 <h3 id="faqs">FAQs</h3>
 <ul>
-<li>How should I store sensitive information like passwords or API tokens?</li>
+<li>How should I store sensitive information like passwords or API tokens?
+<ul>
 <li>The Security Guide recommends storing passwords in the keychain:
 <ul>
 <li><code>Many apps need to handle passwords and other short but sensitive bits of data, such as keys and login tokens. The iOS Keychain provides a secure way to store these items.</code> - iOS Security Guide</li>
 </ul></li>
-<li>What’s the point of the keychain?</li>
+</ul></li>
+<li>What's the point of the keychain?
+<ul>
 <li>Encrypt your secrets</li>
 <li>Allow/disallow access to secrets depending on the state of the device</li>
 <li>Sync your secrets to iCloud by setting the <code>kSecAttrSynchronizable</code> attribute</li>
+</ul></li>
 </ul>
 <h3 id="wrapping-up">Wrapping Up</h3>
 <p>The iOS Security Guide is quite technical and complicated. If I missed or misrepresented any of the information in the guide you think is important, please leave a comment below!</p>
@@ -119,5 +149,5 @@
        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
    })();
 </script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div></div>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a target="_blank" rel="noopener" href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div></div>
