@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Simple steps for a better technical interview
+title: Simple Steps for a Better Technical Interview
 date: 2022-04-14 20:16:34
 tags: [Software, Interviewing]
 excerpt: "Technical interviewing can feel formidable. Make it easier by standardizing your interview process."
