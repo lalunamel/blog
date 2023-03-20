@@ -1,0 +1,137 @@
+<!DOCTYPE html><html><head><title>Debugging XCode Build Performance by Understanding llbuild — Cody Sehl </title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"><script type="text/javascript" src="/js/ga.js"></script><script type="text/javascript" src="//use.typekit.net/fjx5dfz.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script><link rel="stylesheet" href="/css/prism.css"><script type="text/javascript" src="/js/prism.js"></script><meta name="generator" content="Hexo 5.4.2"></head><body><nav><ul><li><a target="_blank" rel="noopener" href="http://codysehl.net/">About</a></li><li><a target="_blank" rel="noopener" href="http://codysehl.net/work">Work</a></li><li><a href="http://blog.codysehl.net">Blog</a></li></ul></nav></body></html><div class="blog single-post-page"><div class="sidebar"><ul><li><a href="http://blog.codysehl.net">Recent Posts</a><li><a href="http://blog.codysehl.net/tags/Software/">Software</a></li><li><a href="http://blog.codysehl.net/tags/Android/">Android</a></li><li><a href="http://blog.codysehl.net/tags/Profound-Materials/">Profound Materials</a></li><li><a href="http://blog.codysehl.net/tags/Videos/">Videos</a></li><li><a href="http://blog.codysehl.net/tags/Books/">Books</a></li><li><a href="http://blog.codysehl.net/tags/Reviews/">Reviews</a></li><li><a href="http://blog.codysehl.net/tags/Philosophy/">Philosophy</a></li><li><a href="http://blog.codysehl.net/tags/Startup-Term/">Startup Term</a></li><li><a href="http://blog.codysehl.net/tags/iOS/">iOS</a></li><li><a href="http://blog.codysehl.net/tags/Testing/">Testing</a></li><li><a href="http://blog.codysehl.net/tags/Kotlin/">Kotlin</a></li><li><a href="http://blog.codysehl.net/tags/Interviewing/">Interviewing</a></li><li><a href="http://blog.codysehl.net/tags/Gradle/">Gradle</a></li><li><a href="http://blog.codysehl.net/tags/Swift/">Swift</a></li><li><a href="http://blog.codysehl.net/tags/XCode/">XCode</a></li></li></ul></div><div class="sidebar-wrap"><div class="single-post"><h2 class="header">Debugging XCode Build Performance by Understanding llbuild</h2><h3 class="date">March 20th, 2023</h3><div class="content"><p>XCode is a powerful tool that allows developers to create amazing apps, games, and full featured applications. I've used it as a mobile developer in the past, and now as a mobile infrastructure engineer. Most of the time it does its job without complaint, but sometimes it doesn't, and doesn't give much indication as to why.</p>
+<p>I've explored the nitty gritty of <a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=m2Zb6Nkq0n0">how Android apps get built efficiently</a> and here I'll document the same, but for the build system used by XCode called <code>llbuild</code>.</p>
+<p><code>llbuild</code> <a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/xcode-release-notes/build-system-release-notes-for-xcode-10">was integrated into XCode fairly recently</a> (XCode 10, 2018) and is still sometimes referred to as "the new build system". The <a target="_blank" rel="noopener" href="https://forums.swift.org/t/llbuild2/36896">next version is in the works</a>, but that's probably a long way out and will change a fair bit before it's used.</p>
+<p>Both build systems for Android and iOS (Gradle and <code>llbuild</code>) operate with similar fundamental concepts. Gradle operates on <code>tasks</code> with <code>inputs</code> and <code>outputs</code>. <code>llbuild</code> uses <code>commands</code>, <code>rules</code>, and <code>tasks</code> - all of which also have <code>inputs</code> and <code>outputs</code>. In order for builds to operate efficiently, the inputs and outputs from a build are recorded and stored. On subsiquent builds those outputs are reused if the inputs haven't changed. That's the basic idea behind incremental compilation, also called compilation avoidance.</p>
+<p>So if a clean build takes 10 minutes, subsiquent builds with no changes should hypothetically run in seconds - the power of caching!</p>
+<p>But what happens when the dream of incremental compilation doesn't come true? Up until recently I chalked it up to "just the way things are". Today, though, lets dive in and figure out what's really going on and how we can reach the promised land of build system performance and 0 sescond incremental compilation.</p>
+<h3 id="investigating-a-slow-incremental-build">Investigating a slow incremental build</h3>
+<h4 id="finding-the-slow-part">Finding the slow part</h4>
+<p>Before we get into the details, find a part of the build to investigate. For this I recommend XCode's "build with timing summary" or the third party tool <a target="_blank" rel="noopener" href="https://github.com/MobileNativeFoundation/XCLogParser">XCLogParser</a>. A ton has already been written on how to use these tools to find slow aspects of a build, so I won't duplicate that here - a quick google will turn up some great guides.</p>
+<h4 id="the-information-well-be-working-with">The information we'll be working with</h4>
+<p>Now we'll get some files in front of us and explore what they do and how they're structured.</p>
+<p>Firstly, run this in your terminal: <code>defaults write com.apple.dt.XCBuild EnableBuildDebugging -bool YES</code>.</p>
+<p>That will tell XCode to enable build debugging output, which will tell <code>llbuild</code> to do the same. Once you're done debugging your builds, change that <code>YES</code> to a <code>NO</code> and rerun the command. The artifacts that get produced are a bit less than 100Mb per run, which can really add up if you're building all day every day.</p>
+<p>Now, build your project with XCode. The build logs (View &gt; Navigators &gt; Reports) will tell you about a few new files:</p>
+<ul>
+<li><code>manifest.xcbuild</code>
+<ul>
+<li>This is the <code>build file</code> that describes your build as a yml file with a bunch of json in it. It's fed to the build system as a set of instructions.</li>
+</ul></li>
+<li><code>build.db</code>
+<ul>
+<li>This is an SQLite database that holds prior build metadata. It's one half of the cache that allows incremental compilation. The other half is the actual files stored in DerivedData.</li>
+</ul></li>
+<li><code>build.trace</code>
+<ul>
+<li>The trace file is the log of what <code>llbuild</code> actually did as it executed the instructions in <code>manifest.xcbuild</code></li>
+</ul></li>
+</ul>
+<h4 id="investigating">Investigating</h4>
+<p>Now, lets look at those files and investigate what's going on. Open up the <code>manfifest.xcbuild</code> and <code>build.trace</code> in your text editor of choice (careful - they're big!). You can find the exact location of those files by looking at the build log file in the Report Navigator.</p>
+<p>This next part will be fairly freeform - you're going to need to put on your detective hat and explore:</p>
+<ol type="1">
+<li>Start by taking a look at the <code>build.trace</code> and try and find any log lines related to the slow aspect of the build you're investigating.</li>
+</ol>
+<p>Eventually you should find a line that mentions the framework you're interested in and whatever operation is taking a long time - maybe the string <code>:Debug:CompileSwiftSources</code> if you're curious about why the framework is being recompiled. Try and find the line that describes the entire slow operation you're interested in and not just one part, i.e. compiling an entire framework rather than an individual file.</p>
+<ol type="1">
+<li>After you've located the slow operation, the next question to answer is "why did this happen?" To answer this, just employ the standard process you use every day to debug regular programs: start from the observed behavior, walk backwards to find its cause, and repeat until you find the root of the problem.</li>
+</ol>
+<p>As you're working through the trace, use the handy glossary at the bottom to understand what each line means.</p>
+<p>Eventually you'll reach a trace line that makes you say "huh, I didn't modify that file!" or "why'd that change?". What you do next will totally depend on the aspect of the build you're investigating, the cause of the slowness, and so on. I'll leave that up to you!</p>
+<h4 id="wrapping-up">Wrapping Up</h4>
+<p>Assuming you've followed the steps above, you've walked backwards from the observed slow behavior and found its root cause, whether that's an errant file modification, mis-configured build settings, or something else. Hopefully you've been able to remedy that root cause and are on your way to faster, more consistent builds.</p>
+<p>Remember that you don't have to tackle every single slowdown all at once! Any non-trivial XCode project will have multiple steps that can be improved or optimized.</p>
+<p>Good luck, and keep working towards 0 second incremental builds in XCode!</p>
+<h4 id="glossary">Glossary</h4>
+<h5 id="anatomy-of-a-trace-line">Anatomy of a trace line</h5>
+<pre><code>&#123; &quot;new-rule&quot;, &quot;R7897&quot;, &quot;N/Users/blah/foo/bar/file.json&quot; &#125;
+
+The first element is the &quot;trace keyword&quot; - it describes what this trace line is doing
+The second element is the rule ID, formatted something like R###
+The third element is the rule key, and it usually looks like the path to a file. The N at the front is a marker for the build system. It might be a different capital letter sometimes.</code></pre>
+<pre><code>&#123; &quot;rule-scanning-next-input&quot;, &quot;R7853&quot;, &quot;R7854&quot; &#125;
+
+The first element is the trace keyword
+The second element is a rule ID for the rule that&#39;s being scanned
+The third element is a rule ID for the input of the rule that&#39;s being scanned. 
+
+Think of it this way: the third element is an input to the second, and therefore to scan the second element, all its inputs must be scanned as well - that&#39;s what&#39;s happening here.</code></pre>
+<h5 id="trace-keywords">Trace keywords</h5>
+<ul>
+<li><code>new-task</code> - when a new task is created</li>
+<li><code>new-rule</code> - when a new rule is created</li>
+<li><code>build-started</code> - when the build is started</li>
+<li><code>handling-build-input-request</code> - when a build input request is handled from the BuildEngine. A "build input request" is a request made by a <code>rule</code> to do some work</li>
+<li><code>created-task-for-rule</code> - when a rule creates a task to do some work on its behalf</li>
+<li><code>handling-task-input-request</code> - when a build input request is handled from the BuildEngine. A "build input request" is a request made by a <code>task</code> to do some work</li>
+<li><code>paused-input-request-for-rule-scan</code> - when a rule is scanned, but already marked as "pending scan", so it's skipped and not scanned twice</li>
+<li><code>readying-task-input-request</code> - when a rule's inputs are computed/completed and the work that the rule represents is enqueued</li>
+<li><code>added-rule-pending-task</code> - when a rule's inputs are not computed/completed and the work that the rule represents is attempted to be enqueued (but fails because its inputs are not ready)</li>
+<li><code>completed-task-input-request</code> - when a rule is dequeued after it's been enqueued by "readying-task-input-request"</li>
+<li><code>updated-task-wait-count</code> - when a task is no longer waiting on an input (tasks wait on all their inputs before they're run)</li>
+<li><code>unblocked-task</code> - when a task is no longer waiting on any inputs (happens right after "updated-task-wait-count")</li>
+<li><code>readied-task</code> - when a task is dequeued from <code>readyTaskInfos</code> queue and ready to run. The <code>readyTaskInfos</code> queue contains tasks that are waiting on no inputs</li>
+<li><code>finished-task</code> - when a task is dequeued from <code>finishedTaskInfos</code>. Tasks are placed on this queue when they are completed. A task is "changed" if its value was computed in the current build (and not pulled from a prior build).</li>
+<li><code>build-ended</code> - when the build ends</li>
+<li><code>checking-rule-needs-to-run</code> - when a rule is scanned to determine whether or not it needs to be run</li>
+<li><code>rule-scheduled-for-scanning</code> - when it is determined that a rule needs to be run and it is enqueued for processing (where its inputs are checked to make sure it's ready to run, then it's executed)</li>
+<li><code>rule-scanning-next-input</code> - while a rule is processed, when one of its inputs is retrieved and enqueued for scanning, and has been scanned already</li>
+<li><code>rule-scanning-deferred-on-input</code> - while a rule is processed, when one of its inputs is retrieved, has not been scanned, and is therefore enqueued for scanning</li>
+<li><code>rule-scanning-deferred-on-task</code> - when a rule is processed, when one if its inputs is retrieved, has been scanned already, but the task representing that input has not been completed</li>
+<li><code>rule-needs-to-run, never-built</code> - when a rule is scanned and has not been run and therefore is marked as "needs to run"</li>
+<li><code>rule-needs-to-run, signature-changed</code> - when a rule is scanned and the file associated with the rule for this run has a different <code>signature</code> than that of the previous cached build</li>
+<li><code>rule-needs-to-run, invalid-value</code> - when a rule is scanned and the file associated with the rule for this run has a different <code>stat</code> output (file modification time and other file metadata) than that of the previous cached build</li>
+<li><code>rule-needs-to-run, input-missing</code> - this is a possible trace output, but it isn't currently used anywhere</li>
+<li><code>rule-needs-to-run, input-rebuilt</code> - when the rule has been computed at a certain time, but has an input that's been computed more recently</li>
+<li><code>rule-does-not-need-to-run</code> - if the rule has no dependencies</li>
+<li><code>cycle-force-rule-needs-to-run</code> - force a rule to be run in order to break a build cycle <code>llbuild</code> has detected</li>
+<li><code>cycle-supply-prior-value</code> - when a rule is forced to be run in order to break a build cycle and the value from the previous build is set as the rule result</li>
+</ul>
+<h5 id="manifest.xcbuild-build-file"><code>manifest.xcbuild</code> (build file)</h5>
+<p>This file describes your build. It has a few different parts: <code>client</code>, <code>target</code>, <code>nodes</code>, and <code>commands</code>.</p>
+<p>I've not seen <code>client</code> or <code>target</code> contain particularly useful information. <code>nodes</code> and <code>commands</code> are where it's at.</p>
+<p>You can find the source documentation for each of these things <a target="_blank" rel="noopener" href="https://llbuild.readthedocs.io/en/latest/buildsystem.html#build-file">here</a>, but I'll cover them in my own words now.</p>
+<h5 id="nodes">Nodes</h5>
+<p>A <code>node</code> represents some input or output of the build process. Typically, this is a file.</p>
+<p>Nodes can have <a target="_blank" rel="noopener" href="https://llbuild.readthedocs.io/en/latest/buildsystem.html#node-attributes">attributes</a>.</p>
+<h4 id="sources">Sources</h4>
+<ul>
+<li>Gist from Daniel Dunbar (works at apple on build systems) describing how to turn on build debugging
+<ul>
+<li>https://gist.github.com/ddunbar/2dda0e836c855ea96759d1d05f086d69</li>
+</ul></li>
+<li><code>swift-llbuild</code> repo
+<ul>
+<li>https://github.com/apple/swift-llbuild</li>
+</ul></li>
+<li>Docs on <code>llbuild</code>
+<ul>
+<li>https://llbuild.readthedocs.io/en/latest/buildsystem.html</li>
+</ul></li>
+<li>Blog post on this whole thing
+<ul>
+<li>https://asifmohd.github.io/ios/2021/03/11/xcbuild-debug-info.html</li>
+</ul></li>
+<li>My raw notes on this post
+<ul>
+<li>https://gist.github.com/lalunamel/716de8bb16cbf1d942324fc2120931ee</li>
+</ul></li>
+</ul>
+</div><div id="disqus_thread"></div>
+<script type="text/javascript">
+	// Disqus
+	
+   /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+   var disqus_shortname = 'codysehl-blog'; // required: replace example with your forum shortname
+   var disqus_disable_mobile = false;
+
+   /* * * DON'T EDIT BELOW THIS LINE * * */
+   (function() {
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+   })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a target="_blank" rel="noopener" href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div></div>

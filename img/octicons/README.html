@@ -5,65 +5,65 @@
 <li><p>Create a new file called <em>bower.json</em> (if you don't have one already).</p></li>
 <li><p>Add a new line for the Octicon dependency, pointing to the correct repository:</p></li>
 </ol>
-<div class="sourceCode" id="cb1"><pre class="sourceCode json"><code class="sourceCode json"><a class="sourceLine" id="cb1-1" title="1"><span class="fu">{</span></a>
-<a class="sourceLine" id="cb1-2" title="2">  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;my_great_project&quot;</span><span class="fu">,</span></a>
-<a class="sourceLine" id="cb1-3" title="3">  <span class="dt">&quot;dependencies&quot;</span><span class="fu">:</span> <span class="fu">{</span></a>
-<a class="sourceLine" id="cb1-4" title="4">    <span class="dt">&quot;octicons&quot;</span><span class="fu">:</span> <span class="st">&quot;*&quot;</span></a>
-<a class="sourceLine" id="cb1-5" title="5">  <span class="fu">}</span></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="fu">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;my_great_project&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>  <span class="dt">&quot;dependencies&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>    <span class="dt">&quot;octicons&quot;</span><span class="fu">:</span> <span class="st">&quot;*&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>  <span class="fu">}</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="fu">}</span></span></code></pre></div>
 <ol start="3" type="1">
 <li><p>Run <code>bower install</code>. The Octicons styles will be downloaded to <em>bower_components/octicons</em>.</p></li>
 <li><p>Link to the <code>octicons.css</code> stylesheet in the <code>&lt;head&gt;</code> of your <code>&lt;html&gt;</code> page:</p></li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">&lt;link</span><span class="ot"> rel=</span><span class="st">&quot;stylesheet&quot;</span><span class="ot"> href=</span><span class="st">&quot;bower_components/octicons/octicons/octicons.css&quot;</span><span class="kw">&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">&lt;link</span><span class="ot"> rel=</span><span class="st">&quot;stylesheet&quot;</span><span class="ot"> href=</span><span class="st">&quot;bower_components/octicons/octicons/octicons.css&quot;</span><span class="kw">&gt;</span></span></code></pre></div>
 <ol start="4" type="1">
 <li>Simply use an icon in your HTML page:</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">&lt;span</span><span class="ot"> class=</span><span class="st">&quot;octicon octicon-microscope&quot;</span><span class="kw">&gt;&lt;/span&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">&lt;span</span><span class="ot"> class=</span><span class="st">&quot;octicon octicon-microscope&quot;</span><span class="kw">&gt;&lt;/span&gt;</span></span></code></pre></div>
 <h3 id="rails-asset-pipeline">Rails' asset pipeline</h3>
 <p>Octicons includes a stylesheet specifically for <a href="http://guides.rubyonrails.org/asset_pipeline.html">Rails 4/Sprockets</a>.</p>
 <ol type="1">
 <li><p>Create a new file called <em>vendor/assets/bower.json</em> (if you don't have one already).</p></li>
 <li><p>Add a new line for the Octicon dependency, pointing to the correct repository:</p></li>
 </ol>
-<div class="sourceCode" id="cb4"><pre class="sourceCode json"><code class="sourceCode json"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">{</span></a>
-<a class="sourceLine" id="cb4-2" title="2">  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;my_great_project&quot;</span><span class="fu">,</span></a>
-<a class="sourceLine" id="cb4-3" title="3">  <span class="dt">&quot;dependencies&quot;</span><span class="fu">:</span> <span class="fu">{</span></a>
-<a class="sourceLine" id="cb4-4" title="4">    <span class="dt">&quot;octicons&quot;</span><span class="fu">:</span> <span class="st">&quot;*&quot;</span></a>
-<a class="sourceLine" id="cb4-5" title="5">  <span class="fu">}</span></a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="fu">}</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="fu">{</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>  <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;my_great_project&quot;</span><span class="fu">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>  <span class="dt">&quot;dependencies&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>    <span class="dt">&quot;octicons&quot;</span><span class="fu">:</span> <span class="st">&quot;*&quot;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>  <span class="fu">}</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="fu">}</span></span></code></pre></div>
 <ol start="3" type="1">
 <li><p><code>cd</code> into <code>vendor/assets</code> and run <code>bower install</code>. The Octicons styles will be downloaded to <em>vendor/assets/bower_components/octicons</em>.</p></li>
 <li><p>Open your config/application.rb, and add this line inside your Application:</p></li>
 </ol>
-<div class="sourceCode" id="cb5"><pre class="sourceCode ruby"><code class="sourceCode ruby"><a class="sourceLine" id="cb5-1" title="1">config.assets.precompile +=<span class="ot"> %w(</span><span class="st">*.svg *.eot *.woff *.ttf</span><span class="ot">)</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>config.assets.precompile +=<span class="ot"> %w(</span><span class="st">*.svg *.eot *.woff *.ttf</span><span class="ot">)</span></span></code></pre></div>
 <ol start="5" type="1">
 <li>In your application stylesheet, require <code>sprockets-octicons</code>:</li>
 </ol>
-<div class="sourceCode" id="cb6"><pre class="sourceCode css"><code class="sourceCode css"><a class="sourceLine" id="cb6-1" title="1"><span class="co">/*</span></a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="co">= require sprockets-octicons</span></a>
-<a class="sourceLine" id="cb6-3" title="3"><span class="co">*/</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode css"><code class="sourceCode css"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="co">/*</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="co">= require sprockets-octicons</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="co">*/</span></span></code></pre></div>
 <ol start="6" type="1">
 <li>Simply use an icon in your HTML page:</li>
 </ol>
-<div class="sourceCode" id="cb7"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">&lt;span</span><span class="ot"> class=</span><span class="st">&quot;octicon octicon-flame&quot;</span><span class="kw">&gt;&lt;/span&gt;</span></a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">&lt;span</span><span class="ot"> class=</span><span class="st">&quot;octicon octicon-flame&quot;</span><span class="kw">&gt;&lt;/span&gt;</span></span></code></pre></div>
 <ol start="7" type="1">
 <li>If you want a view helper, add something like this to <em>app/helpers/application_helper.rb</em>:</li>
 </ol>
-<div class="sourceCode" id="cb8"><pre class="sourceCode ruby"><code class="sourceCode ruby"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">def</span> octicon(code)</a>
-<a class="sourceLine" id="cb8-2" title="2">  content_tag <span class="st">:span</span>, <span class="st">&#39;&#39;</span>, <span class="st">:class</span> =&gt; <span class="st">&quot;octicon octicon-</span><span class="ot">#{</span>code.to_s.dasherize<span class="ot">}</span><span class="st">&quot;</span></a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="kw">end</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="kw">def</span> octicon(code)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>  content_tag <span class="st">:span</span>, <span class="st">&#39;&#39;</span>, <span class="st">:class</span> =&gt; <span class="st">&quot;octicon octicon-</span><span class="ot">#{</span>code.to_s.dasherize<span class="ot">}</span><span class="st">&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
 <h2 id="best-practices">Best practices</h2>
 <ul>
 <li><p>Octicons look best in sizes that are multiples of 16px. You can update the size using the <code>font-size</code> CSS property. For example:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode css"><code class="sourceCode css"><a class="sourceLine" id="cb9-1" title="1"><span class="fu">.octicon</span> {</a>
-<a class="sourceLine" id="cb9-2" title="2">  <span class="kw">font-size</span>: <span class="dv">32</span><span class="dt">px</span><span class="op">;</span></a>
-<a class="sourceLine" id="cb9-3" title="3">}</a></code></pre></div></li>
+<div class="sourceCode" id="cb9"><pre class="sourceCode css"><code class="sourceCode css"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="fu">.octicon</span> {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>  <span class="kw">font-size</span>: <span class="dv">32</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>}</span></code></pre></div></li>
 <li><p>Octicons are not monospaced. This lets them work well next to type, but it means they won’t stack nicely by default. If you intend to stack octicons, such as in navigation, you will want to add some CSS to make them the same width, and centered. For example:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode css"><code class="sourceCode css"><a class="sourceLine" id="cb10-1" title="1"><span class="fu">.navigation</span> <span class="fu">.octicon</span> {</a>
-<a class="sourceLine" id="cb10-2" title="2">  <span class="kw">width</span>: <span class="dv">16</span><span class="dt">px</span><span class="op">;</span></a>
-<a class="sourceLine" id="cb10-3" title="3">  <span class="kw">text-align</span>: <span class="dv">center</span><span class="op">;</span></a>
-<a class="sourceLine" id="cb10-4" title="4">}</a></code></pre></div></li>
+<div class="sourceCode" id="cb10"><pre class="sourceCode css"><code class="sourceCode css"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="fu">.navigation</span> <span class="fu">.octicon</span> {</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a>  <span class="kw">width</span>: <span class="dv">16</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a>  <span class="kw">text-align</span>: <span class="dv">center</span><span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true"></a>}</span></code></pre></div></li>
 </ul>
 <h3 id="resources">Resources</h3>
 <ul>
