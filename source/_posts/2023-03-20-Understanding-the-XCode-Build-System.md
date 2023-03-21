@@ -10,9 +10,9 @@ I've explored the nitty gritty of [how Android apps get built efficiently](https
 
 `llbuild` [was integrated into XCode fairly recently](https://developer.apple.com/documentation/xcode-release-notes/build-system-release-notes-for-xcode-10) (XCode 10, 2018) and is still sometimes referred to as "the new build system". The [next version is in the works](https://forums.swift.org/t/llbuild2/36896), but that's probably a long way out and will change a fair bit before it's used.
 
-Both build systems for Android and iOS (Gradle and `llbuild`) operate with similar fundamental concepts. Gradle operates on `tasks` with `inputs` and `outputs`. `llbuild` uses `commands`, `rules`, and `tasks` - all of which also have `inputs` and `outputs`. In order for builds to operate efficiently, the inputs and outputs from a build are recorded and stored. On subsiquent builds those outputs are reused if the inputs haven't changed. That's the basic idea behind incremental compilation, also called compilation avoidance.
+Both build systems for Android and iOS (Gradle and `llbuild`) operate with similar fundamental concepts. Gradle operates on `tasks` with `inputs` and `outputs`. `llbuild` uses `commands`, `rules`, and `tasks` - all of which also have `inputs` and `outputs`. In order for builds to operate efficiently, the inputs and outputs from a build are recorded and stored. On subsequent builds those outputs are reused if the inputs haven't changed. That's the basic idea behind incremental compilation, also called compilation avoidance.
 
-So if a clean build takes 10 minutes, subsiquent builds with no changes should hypothetically run in seconds - the power of caching!
+So if a clean build takes 10 minutes, subsequent builds with no changes should hypothetically run in seconds - the power of caching!
 
 But what happens when the dream of incremental compilation doesn't come true? Up until recently I chalked it up to "just the way things are". Today, though, lets dive in and figure out what's really going on and how we can reach the promised land of build system performance and 0 sescond incremental compilation.
 
