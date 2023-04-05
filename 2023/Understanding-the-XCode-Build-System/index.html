@@ -34,7 +34,7 @@
 <li>Start by taking a look at the <code>build.trace</code> and try and find any log lines related to the slow aspect of the build you're investigating.</li>
 </ol>
 <p>Eventually you should find a line that mentions the framework you're interested in and whatever operation is taking a long time - maybe the string <code>:Debug:CompileSwiftSources</code> if you're curious about why the framework is being recompiled. Try and find the line that describes the entire slow operation you're interested in and not just one part, i.e. compiling an entire framework rather than an individual file.</p>
-<ol type="1">
+<ol start="2" type="1">
 <li>After you've located the slow operation, the next question to answer is "why did this happen?" To answer this, just employ the standard process you use every day to debug regular programs: start from the observed behavior, walk backwards to find its cause, and repeat until you find the root of the problem.</li>
 </ol>
 <p>As you're working through the trace, use the handy glossary at the bottom to understand what each line means.</p>
