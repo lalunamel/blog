@@ -49,7 +49,7 @@ This next part will be fairly freeform - you're going to need to put on your det
 
   Eventually you should find a line that mentions the framework you're interested in and whatever operation is taking a long time - maybe the string `:Debug:CompileSwiftSources` if you're curious about why the framework is being recompiled. Try and find the line that describes the entire slow operation you're interested in and not just one part, i.e. compiling an entire framework rather than an individual file.
 
-1. After you've located the slow operation, the next question to answer is "why did this happen?"
+2. After you've located the slow operation, the next question to answer is "why did this happen?"
   To answer this, just employ the standard process you use every day to debug regular programs: start from the observed behavior, walk backwards to find its cause, and repeat until you find the root of the problem.
 
 As you're working through the trace, use the handy glossary at the bottom to understand what each line means.
