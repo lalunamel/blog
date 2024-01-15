@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><head><title>How to Debug Your Code — Cody Sehl </title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/css/app.css"><script type="text/javascript" src="/js/ga.js"></script><script type="text/javascript" src="//use.typekit.net/fjx5dfz.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script><link rel="stylesheet" href="/css/prism.css"><script type="text/javascript" src="/js/prism.js"></script><meta name="generator" content="Hexo 5.4.2"></head><body><nav><ul><li><a target="_blank" rel="noopener" href="http://codysehl.net/">About</a></li><li><a target="_blank" rel="noopener" href="http://codysehl.net/work">Work</a></li><li><a href="http://blog.codysehl.net">Blog</a></li></ul></nav></body></html><div class="blog single-post-page"><div class="sidebar"><ul><li><a href="http://blog.codysehl.net">Recent Posts</a><li><a href="http://blog.codysehl.net/tags/Software/">Software</a></li><li><a href="http://blog.codysehl.net/tags/Android/">Android</a></li><li><a href="http://blog.codysehl.net/tags/Profound-Materials/">Profound Materials</a></li><li><a href="http://blog.codysehl.net/tags/Videos/">Videos</a></li><li><a href="http://blog.codysehl.net/tags/Books/">Books</a></li><li><a href="http://blog.codysehl.net/tags/Reviews/">Reviews</a></li><li><a href="http://blog.codysehl.net/tags/Philosophy/">Philosophy</a></li><li><a href="http://blog.codysehl.net/tags/Startup-Term/">Startup Term</a></li><li><a href="http://blog.codysehl.net/tags/iOS/">iOS</a></li><li><a href="http://blog.codysehl.net/tags/Testing/">Testing</a></li><li><a href="http://blog.codysehl.net/tags/Kotlin/">Kotlin</a></li><li><a href="http://blog.codysehl.net/tags/Interviewing/">Interviewing</a></li><li><a href="http://blog.codysehl.net/tags/Gradle/">Gradle</a></li><li><a href="http://blog.codysehl.net/tags/Swift/">Swift</a></li><li><a href="http://blog.codysehl.net/tags/XCode/">XCode</a></li></li></ul></div><div class="sidebar-wrap"><div class="single-post"><h2 class="header">How to Debug Your Code</h2><h3 class="date">January 15th, 2024</h3><div class="content"><p>Unless you only write perfect programs, you're going to need to debug them eventually!</p>
+<p>"Debugging" is what you do when you want to figure out where the problem is in your code.</p>
+<p>The reason we call these problems "bugs" comes from when computers were much larger and much more mechanical. Back in the day, sometimes actual bugs like moths and flies would get into the machines and cause a short circuit. So "debugging" is when you go and look for those little critters and pull them out!</p>
+<p>Another way I like to think about debugging is that it's the process of aligning your mental model with reality: you think the program should behave in one way, and it's going another.</p>
+<p>So what's the right way to debug?</p>
+<p>It's a simple process:</p>
+<ol type="1">
+<li><strong>Write down what you know.</strong></li>
+</ol>
+<p>Things like:</p>
+<p>What you're doing that produces the problem, what the problem looks like, and any hunches you have about what's causing it.</p>
+<p>With trivial bugs you can usually keep all this in your head, but there's really no way to predict whether or not a bug will be trivial or complex, so I prefer to always write things down at the start.</p>
+<ol start="2" type="1">
+<li><strong>Verify your assumptions.</strong></li>
+</ol>
+<p>Within the list of things you know there will certainly be assumptions.</p>
+<p>Do you <em>know</em> that the input you give is recorded properly? Do you <em>know</em> that data is transformed in the way you intended?</p>
+<p>Your job is to verify these assumptions. Somewhere along the chain, an assumption you have will be wrong, and it's your job to find out where.</p>
+<ol start="3" type="1">
+<li><strong>GOTO 1</strong></li>
+</ol>
+<p></br></p>
+<p>It's that simple. Keep writing down what you know, and then verifying those things.</p>
+<p>And a few final tips:</p>
+<p><strong>Imagine what your code will do before you run it.</strong></p>
+<p>Ask yourself "what will happen when I git 'go'?" Developing a mental model is an important part of becoming a more proficient programmer.</p>
+<p><strong>Print statements are useful for debugging but a full-featured debugger is better.</strong></p>
+<p>If you've only been using print statements to debug your code, you will be <em>shocked</em> at how much better a real GUI debugger is! Find one in your favorite IDE and use it.</p>
+</div><div id="disqus_thread"></div>
+<script type="text/javascript">
+	// Disqus
+	
+   /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+   var disqus_shortname = 'codysehl-blog'; // required: replace example with your forum shortname
+   var disqus_disable_mobile = false;
+
+   /* * * DON'T EDIT BELOW THIS LINE * * */
+   (function() {
+       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+       dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+   })();
+</script>
+<noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a target="_blank" rel="noopener" href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div></div>
