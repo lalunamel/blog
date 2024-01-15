@@ -352,10 +352,6 @@ code {
 .single-post .content ol > li > ul {
   margin-bottom: 0px;
 }
-#disqus_thread {
-  margin-top: 100px;
-  padding-top: 60px;
-}
 em {
   font-style: oblique;
 }
@@ -446,9 +442,5 @@ h6 {
   }
   .sidebar-wrap {
     width: 600px;
-  }
-  #disqus_thread {
-    margin-top: 120px;
-    padding-top: 70px;
   }
 }
